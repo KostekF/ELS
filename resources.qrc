@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/stylesheets">
+        <file>stylesheets/qpushbutton.qss</file>
+    </qresource>
+    <qresource prefix="/img">
+        <file>img/logo.png</file>
+        <file>img/els.png</file>
+        <file>img/croppedlogo.png</file>
+    </qresource>
+</RCC>
