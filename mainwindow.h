@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include"librarywindowwidget.h"
+#include"intro.h"
 namespace Ui {
 class MainWindow;
 }
@@ -21,6 +22,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
     libraryWindowWidget * libWindow;
+    intro * introWindow;
 };
 
 #endif // MAINWINDOW_H

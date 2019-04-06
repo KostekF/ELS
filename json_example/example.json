@@ -1,0 +1,28 @@
+{
+ "books":[
+   {
+     "author":{"name":"Jacek","last_name":"Placek"},
+   "category":"mechanika, fizyka, chemia",
+   "title":"Wielki świat",
+   "description":"Książka przedstawia zagadki świata",
+   "key_words":"świat, zagadki, mechanika",
+   "release_date":"2018.04.16",
+   "book_ids":[
+    "255093",
+    "255094"
+    ]
+   },
+{
+     "author":{"name":"Wacław","last_name":"Spirzek"},
+   "category":"beletrystyka, sci-fi",
+   "title":"Jak pokonałem wiedźmina",
+   "description":"Książka przedstawia przygody pogromcy wiedźmina",
+   "key_words":"walki,sci-fi,przygoda",
+   "release_date":"2010.01.01",
+    "book_ids":[
+    "300012"
+    ]
+   }
+   ]
+ 
+}

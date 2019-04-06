@@ -12,9 +12,8 @@ login::login(QWidget *parent) :
     ui->lineEdit_pass->setPlaceholderText("password");
 
 
+    //Set logo img in login screen
     QPixmap pixmap(":/img/img/croppedlogo.png");
-    int height=ui->label_logoLogin->height();
-    int width=ui->label_logoLogin->width();
     ui->label_logoLogin->setAlignment(Qt::AlignCenter);
     ui->label_logoLogin->setPixmap(pixmap.scaled(ui->label_logoLogin->size(),Qt::KeepAspectRatio));
 
@@ -40,7 +39,7 @@ void login::on_pushButton_login_clicked()
     //TODO: check token recived from server
     //if(login succesfull)
 
-      //connect(this,SIGNAL(login::loginSuccessful()),MainWindow,SLOT(MainWindow::showLibWindow()));
+
          emit loginSuccessful();
         this->close();
 

@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     login.cpp \
     intro.cpp \
-    librarywindowwidget.cpp
+    librarywindowwidget.cpp \
+    Book.cpp
 
 HEADERS  += mainwindow.h \
     login.h \
     intro.h \
-    librarywindowwidget.h
+    librarywindowwidget.h \
+    Book.h
 
 FORMS    += mainwindow.ui \
     login.ui \

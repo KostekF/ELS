@@ -2,7 +2,9 @@
 #define LIBRARYWINDOWWIDGET_H
 
 #include <QWidget>
-
+#include"QFrame"
+#include"Book.h"
+#include"vector"
 namespace Ui {
 class libraryWindowWidget;
 }
@@ -17,6 +19,11 @@ public:
 
 private:
     Ui::libraryWindowWidget *ui;
+    QFrame * line;
+    std::vector<Book> vBooks_;
+
+
+    void readJson(QString json="");
 };
 
 #endif // LIBRARYWINDOWWIDGET_H

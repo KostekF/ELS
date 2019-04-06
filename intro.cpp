@@ -11,20 +11,12 @@ intro::intro(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QFile styleFile(":/stylesheets/stylesheets/qpushbutton.qss");
-    styleFile.open(QFile::ReadOnly);
-    QPushButton:setStyleSheet(QString::fromLatin1(styleFile.readAll()));
-    styleFile.close();
 
 
-
-
+    //Create logo image
     QPixmap pixmap(":/img/img/logo.png");
-    int height=ui->label_logoPhoto->height();
-    int width=ui->label_logoPhoto->width();
-    qDebug()<<width<<", "<<height<<"\n";
-     ui->label_logoPhoto->setAlignment(Qt::AlignCenter);
-
+    ui->label_logoPhoto->setAlignment(Qt::AlignCenter);
+   // qDebug()<<ui->label_logoPhoto->size();
     ui->label_logoPhoto->setPixmap(pixmap.scaled(ui->label_logoPhoto->size(),Qt::KeepAspectRatio));
 }
 
@@ -35,10 +27,14 @@ intro::~intro()
 
 void intro::on_pushButton_clicked()
 {
-    login * logDialog = new login(this);
-
-    connect(logDialog,SIGNAL(loginSuccessful()),parent(),SLOT(showLibWindow()));
+    //create login dialog
+    logDialog = new login(this);
     logDialog->setModal(true);
     logDialog->show();
     logDialog->setFixedSize(logDialog->size());
+
+    //connect successful login with hiding intro widget and showing library widget from mainwindow class
+    connect(logDialog,SIGNAL(loginSuccessful()),parent(),SLOT(showLibWindow()));
+
+
 }
