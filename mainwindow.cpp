@@ -20,12 +20,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Create welcome widget with ELS text, logo and login button
     //and set this widget as central widget
-   // introWindow=new intro(this);
-   // this->setCentralWidget(introWindow);
+   introWindow=new intro(this);
+   this->setCentralWidget(introWindow);
 
-
-    libWindow = new libraryWindowWidget(this);
-    this->setCentralWidget(libWindow);
+    //just for tests, delete later
+   //libWindow = new libraryWindowWidget(this);
+   //this->setCentralWidget(libWindow);
 }
 
 MainWindow::~MainWindow()

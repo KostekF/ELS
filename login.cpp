@@ -45,3 +45,11 @@ void login::on_pushButton_login_clicked()
 
 
 }
+
+
+
+//delete this
+void login::on_label_linkActivated(const QString &link)
+{
+    qDebug()<<"HELLO PRZYPOMNIENIE HASLA";
+}

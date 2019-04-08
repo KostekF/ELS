@@ -18,6 +18,9 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_up">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetNoConstraint</enum>
+       </property>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
@@ -29,7 +32,8 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>empty</string>
+            <string>Wyszukiwanie 
+zaawansowane</string>
            </property>
           </widget>
          </item>
@@ -42,7 +46,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>empty</string>
+            <string>Moje konto</string>
            </property>
           </widget>
          </item>
@@ -55,7 +59,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>Moje konto</string>
+            <string>Wyloguj</string>
            </property>
           </widget>
          </item>
@@ -84,6 +88,9 @@
       </layout>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QListWidget" name="listWidget_booksList"/>
    </item>
   </layout>
  </widget>

@@ -5,6 +5,9 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include"QFile"
+#include <QListWidget>
+#include <QListWidgetItem>
+#include"booklistwidget.h"
 libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::libraryWindowWidget)
@@ -20,6 +23,46 @@ libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
 
     //test?
     readJson();
+
+
+
+
+
+    //ADD book widget to QListWidget
+
+    int licznik=0;//delete this
+    for(int i=0;i<20;++i)//JUST FOR TESTS, DELETE THIS FOR LATER
+    {
+        for(std::vector<Book>::iterator itr = vBooks_.begin();itr!=vBooks_.end();++itr)
+        {
+            //Creating a new list widget item whose parent is the listwidget itself
+                QListWidgetItem *listWidgetItem = new QListWidgetItem(ui->listWidget_booksList);
+
+                //Adding the item to the listwidget
+                ui->listWidget_booksList->addItem (listWidgetItem);
+
+                //Creating an object of the designed widget which is to be added to the listwidget
+                bookListWidget *booklistwidget = new bookListWidget();
+                //Assign data from database to booklist widget
+                booklistwidget->setMainTitle(QString::number(licznik)+") "+itr->author().last_name +" "+ itr->author().name,itr->title());
+                licznik++;
+                booklistwidget->setKeywords(itr->key_words());
+                booklistwidget->setDescription(itr->description());
+
+
+                //Making sure that the listWidgetItem has the same size as the TheWidgetItem
+                listWidgetItem->setSizeHint (booklistwidget->sizeHint ());
+
+                //Finally adding the itemWidget to the list
+                 ui->listWidget_booksList->setItemWidget (listWidgetItem, booklistwidget);
+
+        }
+    }
+
+
+
+
+
 }
 
 libraryWindowWidget::~libraryWindowWidget()

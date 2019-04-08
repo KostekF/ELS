@@ -6,6 +6,7 @@
         <file>img/logo.png</file>
         <file>img/els.png</file>
         <file>img/croppedlogo.png</file>
+        <file>img/icon_book.png</file>
     </qresource>
     <qresource prefix="/json">
         <file>json_example/example.json</file>

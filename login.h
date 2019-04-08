@@ -27,6 +27,8 @@ private slots:
 
     void on_pushButton_login_clicked();
 
+    void on_label_linkActivated(const QString &link);
+
 private:
     Ui::login *ui;
 };

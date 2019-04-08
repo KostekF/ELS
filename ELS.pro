@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets
 
 TARGET = ELS
 TEMPLATE = app
@@ -17,18 +17,24 @@ SOURCES += main.cpp\
     login.cpp \
     intro.cpp \
     librarywindowwidget.cpp \
-    Book.cpp
+    Book.cpp \
+    booklistwidget.cpp \
+    Register.cpp
 
 HEADERS  += mainwindow.h \
     login.h \
     intro.h \
     librarywindowwidget.h \
-    Book.h
+    Book.h \
+    booklistwidget.h \
+    Register.h
 
 FORMS    += mainwindow.ui \
     login.ui \
     intro.ui \
-    librarywindowwidget.ui
+    librarywindowwidget.ui \
+    booklistwidget.ui \
+    Register.ui
 
 RESOURCES += \
     resources.qrc
