@@ -3,6 +3,7 @@
 #include"QFocusEvent"
 #include"QDebug"
 #include "mainwindow.h"
+
 login::login(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::login)
@@ -10,6 +11,16 @@ login::login(QWidget *parent) :
     ui->setupUi(this);
     ui->lineEdit_login->setPlaceholderText("login");
     ui->lineEdit_pass->setPlaceholderText("password");
+
+
+    QFont font( "Ubuntu", 8,QFont::Cursive);
+    ui->widget_resetPass->setFont(font);
+    ui->widget_resetPass->setText("Zapomniałeś hasła?");
+
+    ui->widget_register->setFont(font);
+    ui->widget_register->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    ui->widget_register->setText("Zarejestruj się");
+
 
 
     //Set logo img in login screen
@@ -48,8 +59,19 @@ void login::on_pushButton_login_clicked()
 
 
 
-//delete this
-void login::on_label_linkActivated(const QString &link)
+
+void login::on_widget_register_clicked()
 {
-    qDebug()<<"HELLO PRZYPOMNIENIE HASLA";
+    regDialog = new Register(this);
+    regDialog->setModal(true);
+    regDialog->show();
+    regDialog->setFixedSize(regDialog->size());
+}
+
+void login::on_widget_resetPass_clicked()
+{
+    resetDialog = new ResetPassword(this);
+    resetDialog->setModal(true);
+    resetDialog->show();
+    resetDialog->setFixedSize(resetDialog->size());
 }

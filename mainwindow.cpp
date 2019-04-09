@@ -4,6 +4,7 @@
 #include"intro.h"
 #include"login.h"
 #include "QFile"
+#include"Register.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -26,6 +27,14 @@ MainWindow::MainWindow(QWidget *parent) :
     //just for tests, delete later
    //libWindow = new libraryWindowWidget(this);
    //this->setCentralWidget(libWindow);
+
+    //just for tests,delete later
+/*
+    Register * regDialog = new Register(this);
+    regDialog->setModal(true);
+    regDialog->show();
+    regDialog->setFixedSize(regDialog->size());
+*/
 }
 
 MainWindow::~MainWindow()

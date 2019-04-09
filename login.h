@@ -2,7 +2,8 @@
 #define LOGIN_H
 
 #include <QDialog>
-
+#include"Register.h"
+#include"Resetpassword.h"
 namespace Ui {
 class login;
 }
@@ -19,18 +20,17 @@ signals:
     void loginSuccessful(int permission=0);
 
 
+
+
 private slots:
-
-
-
-
-
     void on_pushButton_login_clicked();
-
-    void on_label_linkActivated(const QString &link);
+    void on_widget_register_clicked();
+    void on_widget_resetPass_clicked();
 
 private:
     Ui::login *ui;
+    Register * regDialog;
+    ResetPassword * resetDialog;
 };
 
 #endif // LOGIN_H
