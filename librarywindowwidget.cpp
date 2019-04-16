@@ -8,6 +8,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 #include"booklistwidget.h"
+#include"Bookdetails.h"
 libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::libraryWindowWidget)
@@ -21,8 +22,13 @@ libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
     line->setFrameShadow(QFrame::Sunken);
     ui->verticalLayout_up->addWidget(line);
 
+
+    connect(ui->listWidget_booksList, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
+               this, SLOT(itemInList_clicked(QListWidgetItem*)));
+
     //test?
-    readJson();
+    readJson();//move this to search_clicked_btn slot?
+
 
 
 
@@ -30,10 +36,8 @@ libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
 
     //ADD book widget to QListWidget
 
-    int licznik=0;//delete this
-    for(int i=0;i<20;++i)//JUST FOR TESTS, DELETE THIS FOR LATER
-    {
-        for(std::vector<Book>::iterator itr = vBooks_.begin();itr!=vBooks_.end();++itr)
+    int licznik=0;
+    for(std::vector<Book>::iterator itr = vBooks_.begin();itr!=vBooks_.end();++itr)
         {
             //Creating a new list widget item whose parent is the listwidget itself
                 QListWidgetItem *listWidgetItem = new QListWidgetItem(ui->listWidget_booksList);
@@ -57,8 +61,6 @@ libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
                  ui->listWidget_booksList->setItemWidget (listWidgetItem, booklistwidget);
 
         }
-    }
-
 
 
 
@@ -146,4 +148,22 @@ void libraryWindowWidget::readJson(QString json)
 
 
 
+}
+
+
+//Show details of book in another window
+// IMPORTANT: it works if vBooks_ won't be changed in the future,
+// TODO?:maybe change it so it will get data from QListWidgetItem(booklistwidget) itself?
+void libraryWindowWidget::itemInList_clicked(QListWidgetItem* click)
+{
+//qDebug()<<"Item in list clicked";
+    //qDebug()<<"Row:"<<ui->listWidget_booksList->row(ui->listWidget_booksList->currentItem());
+
+
+
+    int row=ui->listWidget_booksList->row(ui->listWidget_booksList->currentItem());
+    bookDetails_ = new BookDetails(vBooks_[row],this);
+    bookDetails_->setModal(true);
+    bookDetails_->show();
+    bookDetails_->setFixedSize(bookDetails_->size());
 }

@@ -7,6 +7,9 @@
         <file>img/els.png</file>
         <file>img/croppedlogo.png</file>
         <file>img/icon_book.png</file>
+        <file>img/minusSign.png</file>
+        <file>img/plusSign.png</file>
+        <file>img/whiteMinus.png</file>
     </qresource>
     <qresource prefix="/json">
         <file>json_example/example.json</file>

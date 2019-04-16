@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = ELS
 TEMPLATE = app
 
+CONFIG += c++11
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -21,7 +22,10 @@ SOURCES += main.cpp\
     booklistwidget.cpp \
     Register.cpp \
     Clickablelabel.cpp \
-    Resetpassword.cpp
+    Resetpassword.cpp \
+    Bookdetails.cpp \
+    Advancedsearch.cpp \
+    Advsearchonelinewidget.cpp
 
 HEADERS  += mainwindow.h \
     login.h \
@@ -31,7 +35,10 @@ HEADERS  += mainwindow.h \
     booklistwidget.h \
     Register.h \
     Clickablelabel.h \
-    Resetpassword.h
+    Resetpassword.h \
+    Bookdetails.h \
+    Advancedsearch.h \
+    Advsearchonelinewidget.h
 
 FORMS    += mainwindow.ui \
     login.ui \
@@ -39,7 +46,12 @@ FORMS    += mainwindow.ui \
     librarywindowwidget.ui \
     booklistwidget.ui \
     Register.ui \
-    Resetpassword.ui
+    Resetpassword.ui \
+    Bookdetails.ui \
+    Advancedsearch.ui \
+    Advsearchonelinewidget.ui
 
 RESOURCES += \
     resources.qrc
+
+DISTFILES +=

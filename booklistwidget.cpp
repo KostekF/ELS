@@ -27,6 +27,7 @@ void bookListWidget::setLabelPhoto(QString resAddress)
 
 void bookListWidget::setDescription(QString description)
 {
+     ui->label_description->setWordWrap(true);
     ui->label_description->setText(description);
 }
 
@@ -34,3 +35,5 @@ void bookListWidget::setKeywords(QString keywords)
 {
     ui->label_key_words->setText(keywords);
 }
+
+

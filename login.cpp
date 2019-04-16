@@ -10,7 +10,7 @@ login::login(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->lineEdit_login->setPlaceholderText("login");
-    ui->lineEdit_pass->setPlaceholderText("password");
+    ui->lineEdit_pass->setPlaceholderText("hasło");
 
 
     QFont font( "Ubuntu", 8,QFont::Cursive);
@@ -51,8 +51,8 @@ void login::on_pushButton_login_clicked()
     //if(login succesfull)
 
 
-         emit loginSuccessful();
-        this->close();
+     emit loginSuccessful();
+     this->close();
 
 
 }

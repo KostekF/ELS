@@ -8,10 +8,10 @@ Register::Register(QWidget *parent) :
     ui->setupUi(this);
 
     ui->lineEdit_login->setPlaceholderText("login");
-    ui->lineEdit_pass->setPlaceholderText("password");
+    ui->lineEdit_pass->setPlaceholderText("hasło");
     ui->lineEdit_mail->setPlaceholderText("e-mail");
-    ui->lineEdit_name->setPlaceholderText("first name");
-    ui->lineEdit_lastname->setPlaceholderText("last name");
+    ui->lineEdit_name->setPlaceholderText("imię");
+    ui->lineEdit_lastname->setPlaceholderText("nazwisko");
 
     //Set logo img in login screen
     QPixmap pixmap(":/img/img/croppedlogo.png");

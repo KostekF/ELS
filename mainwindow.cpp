@@ -5,6 +5,8 @@
 #include"login.h"
 #include "QFile"
 #include"Register.h"
+#include"Advancedsearch.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -21,8 +23,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //Create welcome widget with ELS text, logo and login button
     //and set this widget as central widget
-   introWindow=new intro(this);
-   this->setCentralWidget(introWindow);
+  // introWindow=new intro(this);
+  // this->setCentralWidget(introWindow);
 
     //just for tests, delete later
    //libWindow = new libraryWindowWidget(this);
@@ -35,6 +37,15 @@ MainWindow::MainWindow(QWidget *parent) :
     regDialog->show();
     regDialog->setFixedSize(regDialog->size());
 */
+
+
+     //just for tests,delete later
+    Advancedsearch * searchDialog = new Advancedsearch(this);
+    searchDialog->setModal(true);
+    searchDialog->show();
+    searchDialog->setFixedSize(searchDialog->size());
+
+
 }
 
 MainWindow::~MainWindow()

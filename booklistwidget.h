@@ -2,7 +2,7 @@
 #define BOOKLISTWIDGET_H
 
 #include <QWidget>
-
+#include"Book.h"
 namespace Ui {
 class bookListWidget;
 }
@@ -19,6 +19,8 @@ public:
     void setLabelPhoto(QString resAddress);
     void setDescription(QString description);
     void setKeywords(QString keywords);
+
+
 
 private:
     Ui::bookListWidget *ui;
