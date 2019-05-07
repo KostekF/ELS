@@ -12,6 +12,7 @@
 
 #include <QDialog>
 #include"Advsearchonelinewidget.h"
+#include<QListWidgetItem>
 namespace Ui {
 class Advancedsearch;
 }
@@ -29,9 +30,12 @@ private:
     Ui::Advancedsearch *ui;
     AdvSearchOneLineWidget * advLine;
     int categoriesCounter_;
+    AdvSearchOneLineWidget *firstLine=nullptr;
 private slots:
     void on_widget_plus_clicked();
-    void on_widget_minus_clicked();
+    void on_widget_minus_clicked(QWidget * widget);
+    void on_listWidget_categories_itemClicked(QListWidgetItem* item);
+    void on_pushButton_wyszukaj_clicked();
 };
 
 

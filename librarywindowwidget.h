@@ -7,6 +7,7 @@
 #include"vector"
 #include<QListWidgetItem>
 #include "Bookdetails.h"
+#include"Advancedsearch.h"
 namespace Ui {
 class libraryWindowWidget;
 }
@@ -24,11 +25,12 @@ private:
     QFrame * line;
     std::vector<Book> vBooks_;
     BookDetails * bookDetails_;
-
+    Advancedsearch * searchDialog=nullptr;
     void readJson(QString json="");
 
 public slots:
     void itemInList_clicked(QListWidgetItem* click);
+    void on_pushButton_wyszukiwanieZaawansowane_clicked();
 };
 
 #endif // LIBRARYWINDOWWIDGET_H

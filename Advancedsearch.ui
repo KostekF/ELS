@@ -29,7 +29,18 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QDateEdit" name="dateEdit"/>
+        <widget class="QDateEdit" name="dateEdit">
+         <property name="dateTime">
+          <datetime>
+           <hour>0</hour>
+           <minute>0</minute>
+           <second>0</second>
+           <year>1944</year>
+           <month>1</month>
+           <day>2</day>
+          </datetime>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QDateEdit" name="dateEdit_2"/>
@@ -49,6 +60,13 @@
      </item>
      <item>
       <widget class="QListWidget" name="listWidget_categories"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_wyszukaj">
+       <property name="text">
+        <string>Wyszukaj</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

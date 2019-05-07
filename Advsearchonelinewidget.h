@@ -2,7 +2,7 @@
 #define ADVSEARCHONELINEWIDGET_H
 #include"Clickablelabel.h"
 #include <QDialog>
-
+#include"QListWidgetItem"
 namespace Ui {
 class AdvSearchOneLineWidget;
 }

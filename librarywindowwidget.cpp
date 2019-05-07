@@ -167,3 +167,12 @@ void libraryWindowWidget::itemInList_clicked(QListWidgetItem* click)
     bookDetails_->show();
     bookDetails_->setFixedSize(bookDetails_->size());
 }
+
+//Open Window with advanced searching
+void libraryWindowWidget::on_pushButton_wyszukiwanieZaawansowane_clicked()
+{
+   searchDialog = new Advancedsearch(this);
+   searchDialog->setModal(false);
+   searchDialog->show();
+   searchDialog->setFixedSize(searchDialog->size());
+}
