@@ -14,6 +14,7 @@ TEMPLATE = app
 CONFIG += c++11
 
 SOURCES += main.cpp\
+    Myaccsettings.cpp \
         mainwindow.cpp \
     login.cpp \
     intro.cpp \
@@ -28,6 +29,7 @@ SOURCES += main.cpp\
     Advsearchonelinewidget.cpp
 
 HEADERS  += mainwindow.h \
+    Myaccsettings.h \
     login.h \
     intro.h \
     librarywindowwidget.h \
@@ -41,6 +43,7 @@ HEADERS  += mainwindow.h \
     Advsearchonelinewidget.h
 
 FORMS    += mainwindow.ui \
+    Myaccsettings.ui \
     login.ui \
     intro.ui \
     librarywindowwidget.ui \

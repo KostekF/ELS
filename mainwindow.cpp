@@ -6,6 +6,7 @@
 #include "QFile"
 #include"Register.h"
 #include"Advancedsearch.h"
+#include"Myaccsettings.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -44,6 +45,15 @@ MainWindow::MainWindow(QWidget *parent) :
     searchDialog->setModal(true);
     searchDialog->show();
     searchDialog->setFixedSize(searchDialog->size());
+*/
+
+
+/*
+    //just for tests,delete later
+    MyAccSettings * myAccDialog = new MyAccSettings(this);
+    myAccDialog->setModal(true);
+    myAccDialog->show();
+    myAccDialog->setFixedSize(myAccDialog->size());
 */
 
 }

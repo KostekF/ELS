@@ -176,3 +176,11 @@ void libraryWindowWidget::on_pushButton_wyszukiwanieZaawansowane_clicked()
    searchDialog->show();
    searchDialog->setFixedSize(searchDialog->size());
 }
+
+void libraryWindowWidget::on_pushButton_clicked()
+{
+    myAccDialog = new MyAccSettings(this);
+    myAccDialog->setModal(true);
+    myAccDialog->show();
+    myAccDialog->setFixedSize(myAccDialog->size());
+}

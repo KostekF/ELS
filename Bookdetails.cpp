@@ -37,3 +37,9 @@ BookDetails::~BookDetails()
 {
     delete ui;
 }
+
+void BookDetails::on_pushButton_borrowBook_clicked()
+{
+
+    //TODO: check if book is available and then borrow book
+}

@@ -18,6 +18,8 @@ public:
 private:
     Ui::BookDetails *ui;
     Book book;
+public slots:
+    void on_pushButton_borrowBook_clicked();
 };
 
 #endif // BOOKDETAILS_H

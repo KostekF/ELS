@@ -10,6 +10,7 @@
         <file>img/minusSign.png</file>
         <file>img/plusSign.png</file>
         <file>img/whiteMinus.png</file>
+        <file>img/gear.png</file>
     </qresource>
     <qresource prefix="/json">
         <file>json_example/example.json</file>
