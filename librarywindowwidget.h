@@ -10,6 +10,8 @@
 #include"Advancedsearch.h"
 #include "Myaccsettings.h"
 #include<QNetworkAccessManager>
+#include"booklistwidget.h"
+#include<vector>
 namespace Ui {
 class libraryWindowWidget;
 }
@@ -30,13 +32,18 @@ private:
     Advancedsearch * searchDialog = nullptr;
     MyAccSettings * myAccDialog = nullptr;
     QNetworkAccessManager * m_nam;
+    std::vector<bookListWidget*> vBookListWidgets; //To stop memory leaks
     void readJson(QString json="");
+    void displayBooks();  //Display books in QListWidget
+
+
 
 public slots:
     void itemInList_clicked(QListWidgetItem* click);
     void on_pushButton_wyszukiwanieZaawansowane_clicked();
 private slots:
     void on_pushButton_clicked();
+    void on_pushButton_wyszukaj_clicked();
 };
 
 #endif // LIBRARYWINDOWWIDGET_H

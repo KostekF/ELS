@@ -14,6 +14,7 @@ BookDetails::BookDetails(Book book,QWidget *parent) :
     ui->label_mainTitle->setText(book.author().last_name +" "+ book.author().name  + " / "+book.title());
     ui->label_releaseDate->setText(book.release_date());
 
+    /*
     for(int i=0; i<book.book_ids().size();++i)
     {
         QLabel * label=new QLabel(this);
@@ -28,6 +29,7 @@ BookDetails::BookDetails(Book book,QWidget *parent) :
         label3->setText("TEST");
         ui->verticalLayout_returnDate->addWidget(label3);
     }
+    */
 
 
 
