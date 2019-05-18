@@ -83,10 +83,22 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="ClickableLabel" name="widget_resetPass" native="true"/>
+        <widget class="ClickableLabel" name="widget_resetPass" native="true">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="ClickableLabel" name="widget_register" native="true"/>
+        <widget class="ClickableLabel" name="widget_register" native="true">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

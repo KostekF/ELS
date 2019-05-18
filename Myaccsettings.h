@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include "Resetpassword.h"
+#include<QNetworkAccessManager>
 namespace Ui {
 class MyAccSettings;
 }
@@ -20,8 +21,17 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pushButton_delBook_clicked();
+
+    void on_pushButton_addBook_clicked();
+
+
+
+    void on_pushButton_editBook_clicked();
+
 private:
     Ui::MyAccSettings *ui;
+    QNetworkAccessManager * networkManager=nullptr;
 
 };
 

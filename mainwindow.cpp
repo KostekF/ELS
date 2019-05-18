@@ -7,6 +7,7 @@
 #include"Register.h"
 #include"Advancedsearch.h"
 #include"Myaccsettings.h"
+#include"qdebug.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -70,3 +71,8 @@ void MainWindow::showLibWindow()
     this->setCentralWidget(libWindow);
 }
 
+
+void MainWindow::on_actionPanel_operatorski_triggered()
+{
+    qDebug()<<"Hello panel operatorski";
+}

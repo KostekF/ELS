@@ -9,6 +9,7 @@
 #include "Bookdetails.h"
 #include"Advancedsearch.h"
 #include "Myaccsettings.h"
+#include<QNetworkAccessManager>
 namespace Ui {
 class libraryWindowWidget;
 }
@@ -28,6 +29,7 @@ private:
     BookDetails * bookDetails_;
     Advancedsearch * searchDialog = nullptr;
     MyAccSettings * myAccDialog = nullptr;
+    QNetworkAccessManager * m_nam;
     void readJson(QString json="");
 
 public slots:

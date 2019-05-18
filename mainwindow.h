@@ -19,6 +19,9 @@ public:
 public slots:
     void showLibWindow();
 
+private slots:
+    void on_actionPanel_operatorski_triggered();
+
 private:
     Ui::MainWindow *ui;
     libraryWindowWidget * libWindow;

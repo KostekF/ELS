@@ -52,7 +52,7 @@
       <widget class="QLabel" name="label_mainTitle">
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <pointsize>16</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -93,6 +93,7 @@
       <widget class="QLabel" name="label">
        <property name="font">
         <font>
+         <pointsize>14</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -104,6 +105,11 @@
      </item>
      <item row="0" column="1">
       <widget class="QLabel" name="label_category">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>kategoria</string>
        </property>
@@ -113,6 +119,7 @@
       <widget class="QLabel" name="label_3">
        <property name="font">
         <font>
+         <pointsize>14</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -130,6 +137,11 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>opis</string>
        </property>
@@ -139,6 +151,7 @@
       <widget class="QLabel" name="label_5">
        <property name="font">
         <font>
+         <pointsize>14</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -150,6 +163,11 @@
      </item>
      <item row="2" column="1">
       <widget class="QLabel" name="label_keywords">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>slowa kluczowe</string>
        </property>
@@ -159,6 +177,7 @@
       <widget class="QLabel" name="label_7">
        <property name="font">
         <font>
+         <pointsize>14</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -170,6 +189,11 @@
      </item>
      <item row="3" column="1">
       <widget class="QLabel" name="label_releaseDate">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Data wydania</string>
        </property>
@@ -185,6 +209,7 @@
         <widget class="QLabel" name="label_2">
          <property name="font">
           <font>
+           <pointsize>14</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -202,6 +227,7 @@
         <widget class="QLabel" name="label_4">
          <property name="font">
           <font>
+           <pointsize>14</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>
@@ -219,6 +245,7 @@
         <widget class="QLabel" name="label_6">
          <property name="font">
           <font>
+           <pointsize>14</pointsize>
            <weight>75</weight>
            <bold>true</bold>
           </font>

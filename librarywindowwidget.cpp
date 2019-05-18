@@ -9,6 +9,15 @@
 #include <QListWidgetItem>
 #include"booklistwidget.h"
 #include"Bookdetails.h"
+
+#include <QNetworkRequest>
+#include<QNetworkReply>
+//http://localhost:8080/book
+
+
+
+
+
 libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::libraryWindowWidget)
@@ -62,6 +71,21 @@ libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
 
         }
 
+    m_nam = new QNetworkAccessManager();
+    QNetworkRequest request(QUrl("http://localhost:8080/book"));
+
+    QNetworkReply *reply = m_nam->get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        const QJsonArray array = jsonDoc.array();
+
+        for (const QJsonValue &value : array) {
+            qDebug()<<(value["id"].toString());
+            qDebug()<<(value["name"].toString());
+            qDebug()<<(value["author"].toString());
+        }
+    });
 
 
 
@@ -70,6 +94,7 @@ libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
 libraryWindowWidget::~libraryWindowWidget()
 {
     delete ui;
+    delete m_nam;
 
 }
 
@@ -180,7 +205,7 @@ void libraryWindowWidget::on_pushButton_wyszukiwanieZaawansowane_clicked()
 void libraryWindowWidget::on_pushButton_clicked()
 {
     myAccDialog = new MyAccSettings(this);
-    myAccDialog->setModal(true);
+   // myAccDialog->setModal(true);
     myAccDialog->show();
-    myAccDialog->setFixedSize(myAccDialog->size());
+   // myAccDialog->setFixedSize(myAccDialog->size());
 }
