@@ -13,7 +13,8 @@ BookDetails::BookDetails(Book book,QWidget *parent) :
     ui->label_keywords->setText(book.key_words());
     ui->label_mainTitle->setText(book.author().last_name +" "+ book.author().name  + " / "+book.title());
     ui->label_releaseDate->setText(book.release_date());
-
+    ui->label_bookID->setText(book.getBookID());
+    ui->label_bookID->setTextInteractionFlags(Qt::TextSelectableByMouse);
     /*
     for(int i=0; i<book.book_ids().size();++i)
     {

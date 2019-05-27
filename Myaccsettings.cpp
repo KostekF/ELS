@@ -12,6 +12,7 @@ MyAccSettings::MyAccSettings(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MyAccSettings)
 {
+
     ui->setupUi(this);
     networkManager = new QNetworkAccessManager();
     //Set focus  to "My books" tab
@@ -48,6 +49,11 @@ MyAccSettings::MyAccSettings(QWidget *parent) :
 
     ui->tableWidget_books->setItem   ( ui->tableWidget_books->rowCount()-1, 1, new QTableWidgetItem("16.09.2019"));
     ui->tableWidget_books->item(ui->tableWidget_books->rowCount()-1, 1)->setTextAlignment(Qt::AlignCenter);
+
+    ui->lineEdit_add_bookDate->setPlaceholderText("Data format ex.: 2017-08-30");
+    ui->lineEdit_add_bookKeywords->setPlaceholderText("słowo1, słowo2, ...");
+    ui->lineEdit_edit_bookDate->setPlaceholderText("Data format ex.: 2017-08-30");
+     ui->lineEdit_edit_bookKeywords->setPlaceholderText("słowo1, słowo2, ...");
 
 
     //Set bigger font of cells in tableWidget
@@ -159,31 +165,121 @@ void MyAccSettings::on_pushButton_delBook_clicked()
 
 void MyAccSettings::on_pushButton_addBook_clicked()
 {
-    //TODO: add book code when api is finished
-    /*
-    QJsonObject  obj
-    {
-        {"author","Alan Raczek"},
-        {"name","Historia muzykow"}
-    };
-    QNetworkRequest request(QUrl("http://localhost:8080/book/create"));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
-*/
+    //color when user inputs wrong input
 
-/*
-     connect(reply, &QNetworkReply::finished, this, [this, reply] {
-        reply->deleteLater();
-        const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-        const QJsonObject obj = doc.object();
-        qDebug()<<obj;
-        if (obj.value("status").toString() == "ok") {
-            qDebug()<<"Status OK";
-        } else {
-            qWarning() << "ERROR" << obj.value("error").toString();
-        }
-    });
-    */
+    QPalette palette;
+    palette.setColor(QPalette::Base,Qt::red);
+    palette.setColor(QPalette::Text,Qt::white);
+
+
+    bool isAllOk=true;
+
+    if(ui->lineEdit_add_authorName->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_add_authorName->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_add_authorName->setPalette(this->style()->standardPalette());
+    }
+
+    if(ui->lineEdit_add_authorSurname->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_add_authorSurname->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_add_authorSurname->setPalette(this->style()->standardPalette());
+    }
+
+    if(ui->lineEdit_add_bookDescription->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_add_bookDescription->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_add_bookDescription->setPalette(this->style()->standardPalette());
+    }
+
+    if(ui->lineEdit_add_bookKeywords->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_add_bookKeywords->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_add_bookKeywords->setPalette(this->style()->standardPalette());
+    }
+
+    if(ui->lineEdit_add_bookName->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_add_bookName->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_add_bookName->setPalette(this->style()->standardPalette());
+    }
+
+
+    QRegExp re("^(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)$");  // a digit (\d), zero or more times (*)
+
+    if(ui->lineEdit_add_bookDate->text().isEmpty() || !re.exactMatch(ui->lineEdit_add_bookDate->text()))
+    {
+       isAllOk=false;
+       ui->lineEdit_add_bookDate->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_add_bookDate->setPalette(this->style()->standardPalette());
+    }
+
+
+
+    if(isAllOk)
+    {
+        QJsonObject  obj
+        {
+            {"author",QJsonObject{
+                    {"name",ui->lineEdit_add_authorName->text()},
+                    {"surname",ui->lineEdit_add_authorSurname->text()}
+                }
+            },
+            {"bookcategory", "FANTASY"}, //TODO dodaj listę kategorii?
+            {"description",ui->lineEdit_add_bookDescription->text()},
+            {"keyWords",ui->lineEdit_add_bookKeywords->text()},
+            {"name",ui->lineEdit_add_bookName->text()},
+            {"releaseDate",ui->lineEdit_add_bookDate->text()}
+
+        };
+        QNetworkRequest request(QUrl("http://localhost:8080/book/create"));
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
+
+
+
+        connect(reply, &QNetworkReply::finished, this, [this, reply] {
+            reply->deleteLater();
+            QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+            int status = statusCode.toInt();
+
+            if ( status == 201 )
+            {
+                QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+                qDebug() << reason;
+
+                QMessageBox::information(this, "Poprawne dodanie książki", "<font size = 10 color = green >Dodano książkę do zbioru!</font>", QMessageBox::Ok);
+            }
+            else {
+                QMessageBox::information(this, "Błąd dodawania książki", "<font size = 10 color = red >Nie udało się dodać książki, sprawdź wszystkie dane/połączenie!</font>", QMessageBox::Ok);
+            }
+            const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+            const QJsonObject obj = doc.object();
+            qDebug()<<obj;
+            if (obj.value("status").toString() == "OK") {
+                qDebug()<<"Status OK";
+            } else {
+                qWarning() << "ERROR" << obj.value("error").toString();
+            }
+        });
+    }
 }
 
 
@@ -200,4 +296,130 @@ void MyAccSettings::on_pushButton_editBook_clicked()
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
 */
+    //color when user inputs wrong input
+
+    QPalette palette;
+    palette.setColor(QPalette::Base,Qt::red);
+    palette.setColor(QPalette::Text,Qt::white);
+
+
+    bool isAllOk=true;
+
+    if(ui->lineEdit_edit_authorName->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_edit_authorName->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_edit_authorName->setPalette(this->style()->standardPalette());
+    }
+
+    if(ui->lineEdit_edit_authorSurname->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_edit_authorSurname->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_edit_authorSurname->setPalette(this->style()->standardPalette());
+    }
+
+    if(ui->lineEdit_edit_bookDescription->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_edit_bookDescription->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_edit_bookDescription->setPalette(this->style()->standardPalette());
+    }
+
+    if(ui->lineEdit_edit_bookKeywords->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_edit_bookKeywords->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_edit_bookKeywords->setPalette(this->style()->standardPalette());
+    }
+
+    if(ui->lineEdit_edit_bookName->text().isEmpty())
+    {
+       isAllOk=false;
+       ui->lineEdit_edit_bookName->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_edit_bookName->setPalette(this->style()->standardPalette());
+    }
+
+
+    QRegExp re("^(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)$");  // a digit (\d), zero or more times (*)
+
+    if(ui->lineEdit_edit_bookDate->text().isEmpty() || !re.exactMatch(ui->lineEdit_edit_bookDate->text()))
+    {
+       isAllOk=false;
+       ui->lineEdit_edit_bookDate->setPalette(palette);
+    }
+    else{
+     ui->lineEdit_edit_bookDate->setPalette(this->style()->standardPalette());
+    }
+   QRegExp re1("^[a-zA-Z0-9_]{24}$");  // a digit (\d), zero or more times (*)
+
+    if(ui->line_edit_bookID->text().isEmpty() || !re1.exactMatch(ui->line_edit_bookID->text()))
+    {
+       isAllOk=false;
+       ui->line_edit_bookID->setPalette(palette);
+    }
+    else{
+     ui->line_edit_bookID->setPalette(this->style()->standardPalette());
+    }
+
+
+
+    if(isAllOk)
+    {
+        qDebug()<<"Edit: all is ok";
+        QJsonObject  obj
+        {
+            {"author",QJsonObject{
+                    {"name",ui->lineEdit_edit_authorName->text()},
+                    {"surname",ui->lineEdit_edit_authorSurname->text()}
+                }
+            },
+            {"bookcategory", "FANTASY"}, //TODO dodaj listę kategorii?
+            {"description",ui->lineEdit_edit_bookDescription->text()},
+            {"keyWords",ui->lineEdit_edit_bookKeywords->text()},
+            {"name",ui->lineEdit_edit_bookName->text()},
+            {"releaseDate",ui->lineEdit_edit_bookDate->text()}
+
+        };
+        QNetworkRequest request(QUrl("http://localhost:8080/book/update/"+ui->line_edit_bookID->text()));
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
+
+
+
+        connect(reply, &QNetworkReply::finished, this, [this, reply] {
+            reply->deleteLater();
+            QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+            int status = statusCode.toInt();
+
+            if ( status == 201 )
+            {
+                QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+                qDebug() << reason;
+
+                QMessageBox::information(this, "Poprawne edytowanie książki", "<font size = 10 color = green >Edytowano książkę w zbiorze!</font>", QMessageBox::Ok);
+            }
+            else {
+                QMessageBox::information(this, "Błąd edytowania książki", "<font size = 10 color = red >Nie udało się edytować książki, sprawdź wszystkie dane/połączenie!</font>", QMessageBox::Ok);
+            }
+            const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+            const QJsonObject obj = doc.object();
+            qDebug()<<obj;
+            if (obj.value("status").toString() == "OK") {
+                qDebug()<<"Status OK";
+            } else {
+                qWarning() << "ERROR" << obj.value("error").toString();
+            }
+        });
+    }
 }

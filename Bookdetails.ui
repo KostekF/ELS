@@ -219,6 +219,18 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QLabel" name="label_bookID">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>id</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -237,6 +249,13 @@
          </property>
         </widget>
        </item>
+       <item>
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -252,6 +271,13 @@
          </property>
          <property name="text">
           <string>Data zwrotu:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>TextLabel</string>
          </property>
         </widget>
        </item>

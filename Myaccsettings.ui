@@ -22,7 +22,7 @@
       </font>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_myBooks">
       <attribute name="title">
@@ -360,7 +360,7 @@ Error msgError msg Error msg</string>
          <property name="currentIndex">
           <number>0</number>
          </property>
-         <widget class="QWidget" name="">
+         <widget class="QWidget" name="widget">
           <attribute name="title">
            <string>Zarządzanie zbiorami</string>
           </attribute>
@@ -681,7 +681,7 @@ Error msgError msg Error msg</string>
                           <string>ID książki:</string>
                          </property>
                          <property name="buddy">
-                          <cstring>lineEdit_edie_bookID</cstring>
+                          <cstring>line_edit_bookID</cstring>
                          </property>
                         </widget>
                        </item>
@@ -698,7 +698,7 @@ Error msgError msg Error msg</string>
                           <string>Nazwa książki:</string>
                          </property>
                          <property name="buddy">
-                          <cstring>lineEdit_edie_bookName</cstring>
+                          <cstring>lineEdit_edit_bookName</cstring>
                          </property>
                         </widget>
                        </item>
@@ -792,10 +792,10 @@ Error msgError msg Error msg</string>
                      <item>
                       <layout class="QVBoxLayout" name="verticalLayout_14">
                        <item>
-                        <widget class="QLineEdit" name="lineEdit_edie_bookID"/>
+                        <widget class="QLineEdit" name="line_edit_bookID"/>
                        </item>
                        <item>
-                        <widget class="QLineEdit" name="lineEdit_edie_bookName"/>
+                        <widget class="QLineEdit" name="lineEdit_edit_bookName"/>
                        </item>
                        <item>
                         <widget class="QLineEdit" name="lineEdit_edit_bookKeywords"/>
@@ -860,7 +860,7 @@ Error msgError msg Error msg</string>
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
              <x>20</x>
@@ -951,7 +951,7 @@ Error msgError msg Error msg</string>
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="">
+          <widget class="QWidget" name="layoutWidget">
            <property name="geometry">
             <rect>
              <x>30</x>

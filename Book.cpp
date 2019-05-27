@@ -8,6 +8,7 @@ Book::Book()
     description_="";
     key_words_="";
     release_date_="";
+    bookID_="";
    // book_ids_.push_back("000000");
 }
 
@@ -25,7 +26,7 @@ Book::Book(authorStruct author,QString category,QString title, QString descripti
 }
 */
 
-Book::Book(authorStruct author,QString category,QString title, QString description, QString key_words, QString release_date)
+Book::Book(authorStruct author,QString category,QString title, QString description, QString key_words, QString release_date,QString bookID)
  {
      author_=author;
      category_=category;
@@ -33,6 +34,7 @@ Book::Book(authorStruct author,QString category,QString title, QString descripti
      description_=description;
      key_words_=key_words;
      release_date_=release_date;
+     bookID_=bookID;
  }
 QString Book::category() const
 {
@@ -82,6 +84,16 @@ QString Book::release_date() const
 void Book::setRelease_date(const QString &release_date)
 {
     release_date_ = release_date;
+}
+
+QString Book::getBookID() const
+{
+    return bookID_;
+}
+
+void Book::setBookID(const QString &value)
+{
+    bookID_ = value;
 }
 
 /*

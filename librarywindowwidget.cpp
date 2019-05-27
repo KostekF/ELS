@@ -129,7 +129,7 @@ void libraryWindowWidget::readJson(QString json)
             authorStruct authorStru;
             authorStru.name=author.value(QString("name")).toString();
             authorStru.last_name=author.value(QString("last_name")).toString();;
-
+             QString bookID=book.value(QString("id")).toString();
             QString category=book.value(QString("category")).toString();
             QString title=book.value(QString("title")).toString();
             QString description=book.value(QString("description")).toString();
@@ -148,7 +148,7 @@ void libraryWindowWidget::readJson(QString json)
                 */
 
             //assign above variables to Book and push Book to vector<Book>
-            Book exBook(authorStru,category,title, description, key_words, release_date);
+            Book exBook(authorStru,category,title, description, key_words, release_date,bookID);
             vBooks_.push_back(exBook);
 
         }
@@ -214,9 +214,9 @@ void libraryWindowWidget::itemInList_clicked(QListWidgetItem* click)
 
     int row=ui->listWidget_booksList->row(ui->listWidget_booksList->currentItem());
     bookDetails_ = new BookDetails(vBooks_[row],this);
-    bookDetails_->setModal(true);
+    //bookDetails_->setModal(false);
     bookDetails_->show();
-    bookDetails_->setFixedSize(bookDetails_->size());
+   // bookDetails_->setFixedSize(bookDetails_->size());
 }
 
 //Open Window with advanced searching
@@ -275,12 +275,17 @@ void libraryWindowWidget::on_pushButton_wyszukaj_clicked()
         for(QJsonArray::const_iterator itr=booksArray.constBegin();itr!=booksArray.constEnd();++itr)
         {
             QJsonObject book=itr->toObject();
+            bool removed = book.value(QString("removed")).toBool();
+
+            //Skip removed books
+            if(removed==true) {continue;}
+
             QJsonObject author=book.value(QString("author")).toObject();
 
             authorStruct authorStru;
             authorStru.name=author.value(QString("name")).toString();
             authorStru.last_name=author.value(QString("surname")).toString();;
-
+            QString bookID=book.value(QString("id")).toString();
             QString category=book.value(QString("bookcategory")).toString();
             QString title=book.value(QString("name")).toString();
             QString description=book.value(QString("description")).toString();
@@ -288,10 +293,10 @@ void libraryWindowWidget::on_pushButton_wyszukaj_clicked()
             QString release_date=book.value(QString("releaseDate")).toString();
 
             //assign above variables to Book and push Book to vector<Book>
-            Book exBook(authorStru,category,title, description, key_words, release_date);
+            Book exBook(authorStru,category,title, description, key_words, release_date,bookID);
             //qDebug()<<exBook.title();
             vBooks_.push_back(exBook);
-            qDebug()<<"Size: "<<vBooks_.size();
+           // qDebug()<<"Size: "<<vBooks_.size();
         }
 
         //Display books in QListWidget
