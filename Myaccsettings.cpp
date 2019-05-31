@@ -15,6 +15,7 @@ MyAccSettings::MyAccSettings(QWidget *parent) :
 
     ui->setupUi(this);
     networkManager = new QNetworkAccessManager();
+
     //Set focus  to "My books" tab
     ui->tabWidget_options->setCurrentIndex(0);
 
@@ -423,3 +424,92 @@ void MyAccSettings::on_pushButton_editBook_clicked()
         });
     }
 }
+
+
+void MyAccSettings::on_pushButton_changeLoanDate_clicked()
+{
+    //TODO: chceck this function,sleepness doesn't help
+
+
+    //Iterate over every loan to find loan ID of book given by librarian
+    //Alternative: server gives method to return loan by bookID instead
+    // of loanID
+    QNetworkRequest request1(QUrl("http://localhost:8080/loan"));
+    QNetworkReply *reply1 = networkManager->get(request1);
+    connect(reply1, &QNetworkReply::finished, this, [this, reply1] {
+        reply1->deleteLater();
+        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply1->readAll());
+        const QJsonArray loanArray = jsonDoc.array();
+        qDebug()<<"connection succesful, parsing JSON";
+         QString bookID="";
+        //iterate over every loan in array and assign values to variables
+        for(QJsonArray::const_iterator itr=loanArray.constBegin();itr!=loanArray.constEnd();++itr)
+        {
+            QJsonObject loan=itr->toObject();
+            qDebug()<<loan;
+
+            //Uncomment when Bartek adds removed to loan
+           // bool removed = loan.value(QString("removed")).toBool();
+
+            //Skip removed loans
+            //if(removed==true) {continue;}
+
+
+            bookID=loan["bookId"].toString();
+            if(bookID==ui->lineEdit_userExtend_bookID->text())
+            {
+                loanID_=loan["id"].toString();
+                qDebug()<<"loan id: "<<loanID_;
+                changeLoanFinishDate();
+                break;
+            }
+
+        }
+    });
+
+
+
+
+
+}
+
+void MyAccSettings::changeLoanFinishDate()
+{
+    QString finishDate=QDate::currentDate().addMonths(1).toString("yyyy-MM-dd");
+    QJsonObject  obj
+    {
+        {"finishDate",finishDate},
+        {"loanStatus","UNAVAILABLE"}
+    };
+    QNetworkRequest request(QUrl("http://localhost:8080/loan/update/"+loanID_));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
+
+
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+        int status = statusCode.toInt();
+
+        if ( status == 201 )
+        {
+            QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+            qDebug() << reason;
+            QString finishDate=QDate::currentDate().addMonths(1).toString("yyyy-MM-dd");
+            QMessageBox::information(this, "Poprawne przedłużenie terminu książki", "<font size = 10 color = green >Przedłużono termin oddania książki do " +finishDate+ "!</font>", QMessageBox::Ok);
+        }
+        else {
+            QMessageBox::information(this, "Błąd przedłużania książki", "<font size = 10 color = red >Nie udało się przedłużyć terminu książki, sprawdź wszystkie dane/połączenie!</font>", QMessageBox::Ok);
+        }
+        const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
+        const QJsonObject obj = doc.object();
+        qDebug()<<obj;
+        if (obj.value("status").toString() == "OK") {
+            qDebug()<<"Status OK";
+        } else {
+            qWarning() << "ERROR" << obj.value("error").toString();
+        }
+    });
+}
+

@@ -26,7 +26,7 @@ Book::Book(authorStruct author,QString category,QString title, QString descripti
 }
 */
 
-Book::Book(authorStruct author,QString category,QString title, QString description, QString key_words, QString release_date,QString bookID)
+Book::Book(authorStruct author,QString category,QString title, QString description, QString key_words, QString release_date,QString bookID, QString bookAvail)
  {
      author_=author;
      category_=category;
@@ -35,6 +35,7 @@ Book::Book(authorStruct author,QString category,QString title, QString descripti
      key_words_=key_words;
      release_date_=release_date;
      bookID_=bookID;
+     bookAvail_=bookAvail;
  }
 QString Book::category() const
 {
@@ -94,6 +95,16 @@ QString Book::getBookID() const
 void Book::setBookID(const QString &value)
 {
     bookID_ = value;
+}
+
+QString Book::getBookAvail() const
+{
+    return bookAvail_;
+}
+
+void Book::setBookAvail(const QString &bookAvail)
+{
+    bookAvail_ = bookAvail;
 }
 
 /*

@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include"Book.h"
+#include<QNetworkAccessManager>
+
 namespace Ui {
 class BookDetails;
 }
@@ -17,7 +19,13 @@ public:
 
 private:
     Ui::BookDetails *ui;
-    Book book;
+    Book book_;
+    QNetworkAccessManager * networkManager=nullptr;
+
+
+    void createLoan();
+    //for borrowing
+    bool isBookAvailable_=false;
 public slots:
     void on_pushButton_borrowBook_clicked();
 };
