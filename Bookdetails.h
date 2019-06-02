@@ -4,7 +4,7 @@
 #include <QDialog>
 #include"Book.h"
 #include<QNetworkAccessManager>
-
+#include<QJsonArray>
 namespace Ui {
 class BookDetails;
 }
@@ -24,8 +24,12 @@ private:
 
 
     void createLoan();
+    void updateBookAvailability();
+    void updateUserBooklist();  //get books borrowed by user already and invoke postNewBookListToUser() to send data to db
+    void postNewBookListToUser();
     //for borrowing
     bool isBookAvailable_=false;
+    QJsonArray userBookList_={};
 public slots:
     void on_pushButton_borrowBook_clicked();
 };

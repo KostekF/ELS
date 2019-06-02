@@ -36,26 +36,6 @@ BookDetails::BookDetails(Book book,QWidget *parent) :
     else {
         ui->label_bookStatus->setText("Wypożyczona");
     }
-
-    /*
-    for(int i=0; i<book.book_ids().size();++i)
-    {
-        QLabel * label=new QLabel(this);
-        label->setText(book.book_ids()[i]);
-        ui->verticalLayout_ID->addWidget(label);
-
-        QLabel * label2=new QLabel(this);
-        label2->setText("TEST WOLNE");
-        ui->verticalLayout_Status->addWidget(label2);
-
-        QLabel * label3=new QLabel(this);
-        label3->setText("TEST");
-        ui->verticalLayout_returnDate->addWidget(label3);
-    }
-    */
-
-
-
 }
 
 BookDetails::~BookDetails()
@@ -73,7 +53,7 @@ void BookDetails::createLoan()
     QJsonObject  obj
     {
         { "bookId",book_.getBookID()},
-        { "userId", g_userID},
+        { "userId", g_userID},               //TODO change this global
         { "loanStatus", "AVAILABLE"},
         { "beginDate", beginDate},
         { "finishDate", finishDate}
@@ -101,13 +81,82 @@ void BookDetails::createLoan()
         else {
             QMessageBox::information(this, "Błąd wypożyczenia", "<font size = 10 color = red >Nie udało się wypożyczyć książki</font>", QMessageBox::Ok);
         }
-        const QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
-        const QJsonObject obj = doc.object();
-        qDebug()<<obj;
-        if (obj.value("status").toString() == "OK") {
-            qDebug()<<"Status OK";
-        } else {
-            qWarning() << "ERROR" << obj.value("error").toString();
+
+    });
+}
+
+void BookDetails::updateBookAvailability()
+{
+    QJsonObject  obj
+    {
+      {"bookavailability", "UNAVAILABLE"}
+    };
+
+    QNetworkRequest request(QUrl("http://localhost:8080/book/update/"+book_.getBookID()));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
+
+
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+        int status = statusCode.toInt();
+
+        if ( status == 201 )
+        {
+            QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+            qDebug() << reason;
+        }
+
+    });
+}
+
+void BookDetails::updateUserBooklist()
+{
+
+    //Get books (array) that user already borrowed from library
+    QNetworkRequest requestBookAvail(QUrl("http://localhost:8080/user/"+g_userID)); //TODO: change this global
+    QNetworkReply *reply = networkManager->get(requestBookAvail);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        qDebug()<<"updateUserBooklist() - connection succesful, parsing JSON";
+        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        const QJsonObject user = jsonDoc.object();
+
+        //update userBookList with new borrowed book
+        userBookList_=user.value(QString("loan")).toArray();
+        userBookList_.append(book_.getBookID());
+        qDebug()<<"added book "<<book_.title()<<" to user book list.\nUserBookList:"<<userBookList_;
+        postNewBookListToUser();
+        //update db with new userbooklist
+
+    }
+
+    );
+}
+
+void BookDetails::postNewBookListToUser()
+{
+    QJsonObject obj {
+      {"loan",userBookList_}
+    };
+    qDebug()<<"postNewBookListToUser "<<obj;
+    QNetworkRequest request(QUrl("http://localhost:8080/user/update/"+g_userID));       //TODO: change this global var
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
+
+
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+        int status = statusCode.toInt();
+
+        if ( status == 201 )
+        {
+            QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+            qDebug() << reason;
         }
     });
 }
@@ -123,7 +172,7 @@ void BookDetails::on_pushButton_borrowBook_clicked()
       QNetworkReply *reply = networkManager->get(requestBookAvail);
       connect(reply, &QNetworkReply::finished, this, [this, reply] {
           reply->deleteLater();
-              qDebug()<<"connection succesful, parsing JSON";
+              qDebug()<<"on_pushButton_borrowBook_clicked() - connection succesful, parsing JSON";
           const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
           const QJsonObject book = jsonDoc.object();
           //qDebug()<<book;
@@ -133,13 +182,9 @@ void BookDetails::on_pushButton_borrowBook_clicked()
 
                qDebug()<<"Book available";
 
-               //        //TODO: update book availability
-
-
+               updateBookAvailability();
                createLoan();
-
-
-              //TODO: update user bookList
+               updateUserBooklist();
            }
            else{
                qDebug()<<"Book unavailable";
@@ -148,23 +193,4 @@ void BookDetails::on_pushButton_borrowBook_clicked()
 
           }
       );
-
-
-//    if(isBookAvailable_)
-//    {
-//        //TODO: update book availability
-
-//        //TODO: create Loan
-
-//
-
-
-//        //TODO: update user bookList
-
-
-
-
-   // QNetworkRequest request(QUrl("http://localhost:8080/book/"+ui->label_bookID->text()));
-   // reply = networkManager->get(requestBookAvail);
-
 }
