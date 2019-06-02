@@ -19,7 +19,7 @@ class Book
 public:
     Book();
     //Book(authorStruct author,QString category,QString title, QString description, QString key_words, QString release_date,std::vector<QString> book_ids);
-    Book(authorStruct author,QString category,QString title, QString description, QString key_words, QString release_date, QString bookID);
+    Book(authorStruct author,QString category,QString title, QString description, QString key_words, QString release_date, QString bookID,QString bookAvail_);
 
     authorStruct author() const;
     void setAuthor(const authorStruct &author);
@@ -46,6 +46,9 @@ public:
     QString getBookID() const;
     void setBookID(const QString &value);
 
+    QString getBookAvail() const;
+    void setBookAvail(const QString &bookAvail);
+
 private:
     authorStruct author_;
     QString category_;
@@ -54,6 +57,7 @@ private:
     QString key_words_;
     QString release_date_;
     QString bookID_;
+    QString bookAvail_;
    // std::vector<QString> book_ids_;
 };
 

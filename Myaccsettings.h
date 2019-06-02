@@ -29,10 +29,16 @@ private slots:
 
     void on_pushButton_editBook_clicked();
 
+
+    void on_pushButton_changeLoanDate_clicked();
+
 private:
     Ui::MyAccSettings *ui;
     QNetworkAccessManager * networkManager=nullptr;
 
+    //for change loan date
+    QString loanID_="";
+    void changeLoanFinishDate();
 };
 
 #endif // MYACCSETTINGS_H

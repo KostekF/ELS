@@ -1,15 +1,17 @@
 #include "librarywindowwidget.h"
 #include "ui_librarywindowwidget.h"
-#include"QDebug"
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
+
+
 #include"QFile"
 #include <QListWidget>
 #include <QListWidgetItem>
 #include"booklistwidget.h"
 #include"Bookdetails.h"
 #include<vector>
+#include"QDebug"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
 #include <QNetworkRequest>
 #include<QNetworkReply>
 //http://localhost:8080/book
@@ -135,6 +137,7 @@ void libraryWindowWidget::readJson(QString json)
             QString description=book.value(QString("description")).toString();
             QString key_words=book.value(QString("key_words")).toString();
             QString release_date=book.value(QString("release_date")).toString();
+            QString bookAvail=book.value(QString("bookavailability")).toString();
             QJsonArray jsArr= book.value(QString("book_ids")).toArray();
 
             /*
@@ -148,7 +151,7 @@ void libraryWindowWidget::readJson(QString json)
                 */
 
             //assign above variables to Book and push Book to vector<Book>
-            Book exBook(authorStru,category,title, description, key_words, release_date,bookID);
+            Book exBook(authorStru,category,title, description, key_words, release_date,bookID,bookAvail);
             vBooks_.push_back(exBook);
 
         }
@@ -290,10 +293,11 @@ void libraryWindowWidget::on_pushButton_wyszukaj_clicked()
             QString title=book.value(QString("name")).toString();
             QString description=book.value(QString("description")).toString();
             QString key_words=book.value(QString("keyWords")).toString();
+            QString bookAvail=book.value(QString("bookavailability")).toString();
             QString release_date=book.value(QString("releaseDate")).toString();
 
             //assign above variables to Book and push Book to vector<Book>
-            Book exBook(authorStru,category,title, description, key_words, release_date,bookID);
+            Book exBook(authorStru,category,title, description, key_words, release_date,bookID,bookAvail);
             //qDebug()<<exBook.title();
             vBooks_.push_back(exBook);
            // qDebug()<<"Size: "<<vBooks_.size();
