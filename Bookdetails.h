@@ -27,6 +27,7 @@ private:
     void updateBookAvailability();
     void updateUserBooklist();  //get books borrowed by user already and invoke postNewBookListToUser() to send data to db
     void postNewBookListToUser();
+    void checkBookAvailability();
     //for borrowing
     bool isBookAvailable_=false;
     QJsonArray userBookList_={};

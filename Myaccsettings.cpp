@@ -8,6 +8,8 @@
 #include<QMessageBox>
 //TODO: add something else to this class? (buttons, labels, etc)
 
+extern QString g_userID;
+
 MyAccSettings::MyAccSettings(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MyAccSettings)
@@ -30,9 +32,12 @@ MyAccSettings::MyAccSettings(QWidget *parent) :
     ui->tableWidget_books->setColumnWidth(0, this->width()/2);
     ui->tableWidget_books->horizontalHeader()->setStretchLastSection(true);
 
-    //Just for tests add some data to my books
-    ui->tableWidget_books->insertRow(ui->tableWidget_books->rowCount());
 
+
+
+    /*
+        //Just for tests add some data to my books
+    ui->tableWidget_books->insertRow(ui->tableWidget_books->rowCount());
     //Add data to created row
     ui->tableWidget_books->setItem(ui->tableWidget_books->rowCount()-1, 0,new QTableWidgetItem("Stephen King / Misery"));
     ui->tableWidget_books->item(ui->tableWidget_books->rowCount()-1, 0)->setTextAlignment(Qt::AlignCenter);
@@ -57,21 +62,9 @@ MyAccSettings::MyAccSettings(QWidget *parent) :
      ui->lineEdit_edit_bookKeywords->setPlaceholderText("słowo1, słowo2, ...");
 
 
-    //Set bigger font of cells in tableWidget
-    QFont fnt;
-    fnt.setPointSize(16);
-    fnt.setFamily("MS Shell Dlg 2");
-    const int rowCount = ui->tableWidget_books->rowCount();
-    const int columnCount = ui->tableWidget_books->columnCount();
 
-    for(int i = 0; i < rowCount; ++i) {
-        for(int j = 0; j < columnCount; ++j) {
-            QTableWidgetItem* selectedItem = ui->tableWidget_books->item(i, j);
-            selectedItem->setFont(fnt);
-        }
-    }
-
-
+*/
+showUsersBooks();
 
 }
 
@@ -428,7 +421,7 @@ void MyAccSettings::on_pushButton_editBook_clicked()
 
 void MyAccSettings::on_pushButton_changeLoanDate_clicked()
 {
-    //TODO: chceck this function,sleepness doesn't help
+
 
 
     //Iterate over every loan to find loan ID of book given by librarian
@@ -448,8 +441,8 @@ void MyAccSettings::on_pushButton_changeLoanDate_clicked()
             QJsonObject loan=itr->toObject();
             qDebug()<<loan;
 
-            //Uncomment when Bartek adds removed to loan
-           // bool removed = loan.value(QString("removed")).toBool();
+            //TODO: Uncomment when Bartek adds removed to loan
+           // QString bookIsAvail= loan.value(QString("loanStatus")).toString();
 
             //Skip removed loans
             //if(removed==true) {continue;}
@@ -479,7 +472,7 @@ void MyAccSettings::changeLoanFinishDate()
     QJsonObject  obj
     {
         {"finishDate",finishDate},
-        {"loanStatus","UNAVAILABLE"}
+        {"loanStatus","AVAILABLE"}
     };
     QNetworkRequest request(QUrl("http://localhost:8080/loan/update/"+loanID_));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -513,3 +506,295 @@ void MyAccSettings::changeLoanFinishDate()
     });
 }
 
+void MyAccSettings::showUsersBooks()
+{
+    //Get books (array) that user already borrowed from library
+    QNetworkRequest requestBookAvail(QUrl("http://localhost:8080/user/"+g_userID)); //TODO: change this global
+    QNetworkReply *reply = networkManager->get(requestBookAvail);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        qDebug()<<"showUsersBooks() get userbooks - connection succesful, parsing JSON";
+        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        const QJsonObject user = jsonDoc.object();
+
+        userBookList_=user.value(QString("loan")).toArray();
+
+
+        for(QJsonArray::iterator itr=userBookList_.begin(); itr!= userBookList_.end();++itr)
+        {
+            QNetworkRequest getBook(QUrl("http://localhost:8080/book/"+(*itr).toString()));
+            QNetworkReply *reply = networkManager->get(getBook);
+
+            book_.setBookID((*itr).toString());
+
+            //Get book info
+            connect(reply, &QNetworkReply::finished, this, [this, reply] {
+                reply->deleteLater();
+                // qDebug()<<"showUsersBooks() get book info - connection succesful, parsing JSON";
+                const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+                const QJsonObject book = jsonDoc.object();
+                QJsonObject author=book.value(QString("author")).toObject();
+
+                authorStruct authorStru;
+                authorStru.name=author.value(QString("name")).toString();
+                authorStru.last_name=author.value(QString("surname")).toString();;
+
+
+                //qDebug()<<book;
+
+                book_.setTitle(book.value(QString("name")).toString());
+                book_.setAuthor(authorStru);
+                vBooks_.push_back(book_);
+
+
+                //get date of giving book back to library
+
+            }
+
+
+            );
+            QTime dieTime= QTime::currentTime().addMSecs(25);
+               while (QTime::currentTime() < dieTime)
+                   QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        }
+
+
+
+
+        for(int i=0;i<vBooks_.size();++i)
+        {
+            ui->tableWidget_books->insertRow(ui->tableWidget_books->rowCount());
+            QNetworkRequest getLoan(QUrl("http://localhost:8080/loan/?bookId="+vBooks_[i].getBookID()));
+            qDebug()<<"Book id: "<<vBooks_[i].getBookID();
+            QNetworkReply *reply = networkManager->get(getLoan);
+
+            //Get loan date info
+            connect(reply, &QNetworkReply::finished, this,   [this, reply] {
+                reply->deleteLater();
+                // qDebug()<<"showUsersBooks() get loan info - connection succesful, parsing JSON";
+                const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+
+
+                const QJsonArray jsonArr = jsonDoc.array();
+                qDebug()<<"Array size: "<<jsonArr.size();
+                QJsonObject loan;
+                for(int i=0; i<jsonArr.size();++i)
+                {
+                    loan = jsonArr[i].toObject();
+                   QString status= loan["loanStatus"].toString();
+                   if(status=="AVAILABLE")
+                   {
+                       finishDate_=loan["finishDate"].toString().mid(0,10);
+
+                       break;
+                   }
+                }
+
+
+                qDebug()<<"DATE: "<<finishDate_;
+                vfinishDates_.push_back(finishDate_);
+
+            }
+            );
+
+            QTime dieTime= QTime::currentTime().addMSecs(100);
+               while (QTime::currentTime() < dieTime)
+                   QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+            ui->tableWidget_books->setItem(ui->tableWidget_books->rowCount()-1, 0,new QTableWidgetItem(vBooks_[i].author().last_name + " "+ vBooks_[i].author().name +" / "+  vBooks_[i].title()));
+            ui->tableWidget_books->item(i, 0)->setTextAlignment(Qt::AlignCenter);
+
+
+            ui->tableWidget_books->setItem   (i, 1, new QTableWidgetItem(vfinishDates_[i]));
+            ui->tableWidget_books->item(i, 1)->setTextAlignment(Qt::AlignCenter);
+
+            //Set bigger font of cells in tableWidget
+            QFont fnt;
+            fnt.setPointSize(16);
+            fnt.setFamily("MS Shell Dlg 2");
+            const int rowCount = ui->tableWidget_books->rowCount();
+            const int columnCount = ui->tableWidget_books->columnCount();
+            QTableWidgetItem* selectedItem = ui->tableWidget_books->item(i, 0);
+            selectedItem->setFont(fnt);
+            QTableWidgetItem* selectedItem2 = ui->tableWidget_books->item(i, 1);
+            selectedItem2->setFont(fnt);
+
+        }
+
+
+
+
+    }
+
+    );
+
+}
+
+void MyAccSettings::updateBookAvailability()
+{
+    QJsonObject  obj
+    {
+        {"bookavailability", "AVAILABLE"}
+    };
+
+    QNetworkRequest request(QUrl("http://localhost:8080/book/update/"+ui->lineEdit_user_bookID->text()));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
+
+
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+        int status = statusCode.toInt();
+
+        if ( status == 201 )
+        {
+            QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+            qDebug() << reason;
+        }
+
+    });
+
+}
+
+void MyAccSettings::updateLoanStatus()
+{
+    QString finishDate = QDate::currentDate().toString("yyyy-MM-dd");
+    QJsonObject  obj
+    {
+        {"finishDate", finishDate},
+        {"loanStatus","UNAVAILABLE"}
+    };
+
+    QNetworkRequest request(QUrl("http://localhost:8080/loan/update/"+loanID_));
+
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
+
+
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+        int status = statusCode.toInt();
+
+        if ( status == 201 )
+        {
+            QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+            qDebug() << reason;
+        }
+
+    });
+}
+
+void MyAccSettings::postDateAndStatus()
+{
+
+}
+
+void MyAccSettings::delRemoveLoan()
+{
+
+
+            QNetworkRequest request(QUrl("http://localhost:8080/loan/"+loanID_));
+
+            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+            QNetworkReply *reply = networkManager-> deleteResource(request);
+
+
+
+            connect(reply, &QNetworkReply::finished, this, [this, reply] {
+                reply->deleteLater();
+                QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+                int status = statusCode.toInt();
+
+                if ( status == 201 )
+                {
+                    QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+                    qDebug() << reason;
+                }
+
+            });
+}
+
+void MyAccSettings::postRemoveBookFromUserList()
+{
+    for(QJsonArray::iterator itr=userBookList_.begin(); itr!= userBookList_.end();++itr)
+    {
+        if((*itr)==ui->lineEdit_user_bookID->text())
+        {
+            itr=userBookList_.erase(itr);
+            itr--;
+        }
+    }
+
+
+    QJsonObject  obj
+    {
+        {"loan",userBookList_}
+    };
+
+    QNetworkRequest request(QUrl("http://localhost:8080/user/update/"+g_userID));   //TODO: change this global
+
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
+
+
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+        int status = statusCode.toInt();
+
+        if ( status == 201 )
+        {
+            QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+            qDebug() << reason;
+        }
+
+    });
+}
+
+
+
+
+void MyAccSettings::on_pushButton_returnBook_clicked()
+{
+
+    //GetLoanID
+    QNetworkRequest request(QUrl("http://localhost:8080/loan/?bookId="+ui->lineEdit_user_bookID->text()));
+    QNetworkReply *reply = networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        qDebug()<<"updateUserBooklist() - connection succesful, parsing JSON";
+        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+
+
+
+        const QJsonArray jsonArr = jsonDoc.array();
+        QJsonObject loan;
+        for(int i=0; i<jsonArr.size();++i)
+        {
+            loan = jsonArr[i].toObject();
+           QString status= loan["loanStatus"].toString();
+           if(status=="AVAILABLE")
+           {
+               loanID_=loan["id"].toString();
+               break;
+           }
+        }
+
+
+
+        qDebug()<<"loanID: "<<loanID_;
+        updateLoanStatus();
+        delRemoveLoan();
+        postRemoveBookFromUserList();
+        updateBookAvailability();
+
+    }
+
+    );
+
+
+}

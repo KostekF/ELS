@@ -374,7 +374,7 @@ Error msgError msg Error msg</string>
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-154</y>
+                <y>0</y>
                 <width>911</width>
                 <height>813</height>
                </rect>
@@ -923,7 +923,7 @@ Error msgError msg Error msg</string>
              </layout>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_addBook_2">
+             <widget class="QPushButton" name="pushButton_returnBook">
               <property name="text">
                <string>Oddaj książkę</string>
               </property>

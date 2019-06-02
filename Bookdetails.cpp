@@ -25,17 +25,16 @@ BookDetails::BookDetails(Book book,QWidget *parent) :
 
     ui->label_keywords->setText(book.key_words());
     ui->label_mainTitle->setText(book.author().last_name +" "+ book.author().name  + " / "+book.title());
-    ui->label_releaseDate->setText(book.release_date());
+    ui->label_releaseDate->setText(book.release_date().mid(0,10));
     ui->label_bookID->setText(book.getBookID());
     ui->label_bookID->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
-    if(book.getBookAvail()=="AVAILABLE")
-    {
-        ui->label_bookStatus->setText("Dostępna");
-    }
-    else {
-        ui->label_bookStatus->setText("Wypożyczona");
-    }
+
+
+
+
+
+    checkBookAvailability();
 }
 
 BookDetails::~BookDetails()
@@ -89,7 +88,7 @@ void BookDetails::updateBookAvailability()
 {
     QJsonObject  obj
     {
-      {"bookavailability", "UNAVAILABLE"}
+        {"bookavailability", "UNAVAILABLE"}
     };
 
     QNetworkRequest request(QUrl("http://localhost:8080/book/update/"+book_.getBookID()));
@@ -128,8 +127,8 @@ void BookDetails::updateUserBooklist()
         userBookList_=user.value(QString("loan")).toArray();
         userBookList_.append(book_.getBookID());
         qDebug()<<"added book "<<book_.title()<<" to user book list.\nUserBookList:"<<userBookList_;
-        postNewBookListToUser();
         //update db with new userbooklist
+        postNewBookListToUser();
 
     }
 
@@ -139,7 +138,7 @@ void BookDetails::updateUserBooklist()
 void BookDetails::postNewBookListToUser()
 {
     QJsonObject obj {
-      {"loan",userBookList_}
+        {"loan",userBookList_}
     };
     qDebug()<<"postNewBookListToUser "<<obj;
     QNetworkRequest request(QUrl("http://localhost:8080/user/update/"+g_userID));       //TODO: change this global var
@@ -161,36 +160,60 @@ void BookDetails::postNewBookListToUser()
     });
 }
 
+void BookDetails::checkBookAvailability()
+{
+    //Get books (array) that user already borrowed from library
+    QNetworkRequest requestBookAvail(QUrl("http://localhost:8080/book/"+book_.getBookID()));
+    QNetworkReply *reply = networkManager->get(requestBookAvail);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        qDebug()<<"updateUserBooklist() - connection succesful, parsing JSON";
+        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        const QJsonObject book = jsonDoc.object();
+
+        //update userBookList with new borrowed book
+
+        QString isAvailable=book.value(QString("bookavailability")).toString();
+
+        if(isAvailable=="AVAILABLE")
+        {
+            ui->label_bookStatus->setText("Dostępna");
+        }
+        else {
+            ui->label_bookStatus->setText("Wypożyczona");
+        }
+
+    }
+
+    );
+}
+
 
 
 void BookDetails::on_pushButton_borrowBook_clicked()
 {
 
-     //check if book is available
+    //check if book is available
 
-      QNetworkRequest requestBookAvail(QUrl("http://localhost:8080/book/"+book_.getBookID()));
-      QNetworkReply *reply = networkManager->get(requestBookAvail);
-      connect(reply, &QNetworkReply::finished, this, [this, reply] {
-          reply->deleteLater();
-              qDebug()<<"on_pushButton_borrowBook_clicked() - connection succesful, parsing JSON";
-          const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-          const QJsonObject book = jsonDoc.object();
-          //qDebug()<<book;
-           QString isBookAvailable=book.value(QString("bookavailability")).toString();
-           if(isBookAvailable=="AVAILABLE")
-           {
-
-               qDebug()<<"Book available";
-
-               updateBookAvailability();
-               createLoan();
-               updateUserBooklist();
-           }
-           else{
-               qDebug()<<"Book unavailable";
-
-           }
-
-          }
-      );
+    QNetworkRequest requestBookAvail(QUrl("http://localhost:8080/book/"+book_.getBookID()));
+    QNetworkReply *reply = networkManager->get(requestBookAvail);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        qDebug()<<"on_pushButton_borrowBook_clicked() - connection succesful, parsing JSON";
+        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        const QJsonObject book = jsonDoc.object();
+        //qDebug()<<book;
+        QString isBookAvailable=book.value(QString("bookavailability")).toString();
+        if(isBookAvailable=="AVAILABLE")
+        {
+            qDebug()<<"Book available";
+            updateBookAvailability();
+            createLoan();
+            updateUserBooklist();
+        }
+        else{
+            qDebug()<<"Book unavailable";
+        }
+    }
+    );
 }
