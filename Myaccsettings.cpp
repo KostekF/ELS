@@ -55,7 +55,7 @@ MyAccSettings::MyAccSettings(QWidget *parent) :
 
     ui->tableWidget_books->setItem   ( ui->tableWidget_books->rowCount()-1, 1, new QTableWidgetItem("16.09.2019"));
     ui->tableWidget_books->item(ui->tableWidget_books->rowCount()-1, 1)->setTextAlignment(Qt::AlignCenter);
-
+*/
     ui->lineEdit_add_bookDate->setPlaceholderText("Data format ex.: 2017-08-30");
     ui->lineEdit_add_bookKeywords->setPlaceholderText("słowo1, słowo2, ...");
     ui->lineEdit_edit_bookDate->setPlaceholderText("Data format ex.: 2017-08-30");
@@ -63,7 +63,7 @@ MyAccSettings::MyAccSettings(QWidget *parent) :
 
 
 
-*/
+
 showUsersBooks();
 
 }
@@ -553,6 +553,7 @@ void MyAccSettings::showUsersBooks()
 
 
             );
+
             QTime dieTime= QTime::currentTime().addMSecs(25);
                while (QTime::currentTime() < dieTime)
                    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
@@ -787,10 +788,24 @@ void MyAccSettings::on_pushButton_returnBook_clicked()
 
 
         qDebug()<<"loanID: "<<loanID_;
-        updateLoanStatus();
-        delRemoveLoan();
-        postRemoveBookFromUserList();
-        updateBookAvailability();
+        if(loanID_!="")
+        {
+
+            QMessageBox::StandardButton reply;
+
+            reply = QMessageBox::question(this, "Oddawnie książki", "<font size = 10 color = red >Czy na pewno zwrócić książkę o ID =  </font> <font size = 10 color = blue >"+ ui->lineEdit_user_bookID->text()+"</font><font size = 10 color = red >?</font>",
+                                          QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::Yes) {
+                qDebug()<<"Zwrócono książkę do zbioru "<<ui->lineEdit_del_ID->text();
+                updateLoanStatus();
+                delRemoveLoan();
+                postRemoveBookFromUserList();
+                updateBookAvailability();
+            } else {
+                qDebug() << "Zdecydowano się nie zwracać książki";
+            }
+
+        }
 
     }
 

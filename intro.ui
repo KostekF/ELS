@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>413</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
         <string>ELS</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignHCenter|Qt::AlignTop</set>
        </property>
       </widget>
      </item>
@@ -64,8 +64,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>layoutWidget</zorder>
-  <zorder>label</zorder>
  </widget>
  <resources/>
  <connections/>

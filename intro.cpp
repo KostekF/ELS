@@ -18,6 +18,9 @@ intro::intro(QWidget *parent) :
     ui->label_logoPhoto->setAlignment(Qt::AlignCenter);
    // qDebug()<<ui->label_logoPhoto->size();
     ui->label_logoPhoto->setPixmap(pixmap.scaled(ui->label_logoPhoto->size(),Qt::KeepAspectRatio));
+
+
+
 }
 
 intro::~intro()

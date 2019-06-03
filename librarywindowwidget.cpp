@@ -32,55 +32,6 @@ libraryWindowWidget::libraryWindowWidget(QWidget *parent) :
 
     m_nam = new QNetworkAccessManager();
 
-    //test?
-    //  readJson();//move this to search_clicked_btn slot?
-
-    //ADD book widget to QListWidget
-    /*
-    int licznik=0;
-    for(std::vector<Book>::iterator itr = vBooks_.begin();itr!=vBooks_.end();++itr)
-        {
-            //Creating a new list widget item whose parent is the listwidget itself
-                QListWidgetItem *listWidgetItem = new QListWidgetItem(ui->listWidget_booksList);
-
-                //Adding the item to the listwidget
-                ui->listWidget_booksList->addItem (listWidgetItem);
-
-                //Creating an object of the designed widget which is to be added to the listwidget
-                bookListWidget *booklistwidget = new bookListWidget();
-                //Assign data from database to booklist widget
-                booklistwidget->setMainTitle(QString::number(licznik)+") "+itr->author().last_name +" "+ itr->author().name,itr->title());
-                licznik++;
-                booklistwidget->setKeywords(itr->key_words());
-                booklistwidget->setDescription(itr->description());
-
-
-                //Making sure that the listWidgetItem has the same size as the TheWidgetItem
-                listWidgetItem->setSizeHint (booklistwidget->sizeHint ());
-
-                //Finally adding the itemWidget to the list
-                 ui->listWidget_booksList->setItemWidget (listWidgetItem, booklistwidget);
-
-        }
-*/
-
-
-    /*
-    QNetworkRequest request(QUrl("http://localhost:8080/book"));
-
-    QNetworkReply *reply = m_nam->get(request);
-    connect(reply, &QNetworkReply::finished, this, [this, reply] {
-        reply->deleteLater();
-        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
-        const QJsonArray array = jsonDoc.array();
-
-        for (const QJsonValue &value : array) {
-            qDebug()<<(value["id"].toString());
-            qDebug()<<(value["name"].toString());
-            qDebug()<<(value["author"].toString());
-        }
-    });
-*/
     on_pushButton_wyszukaj_clicked();
 
 }
@@ -98,7 +49,6 @@ libraryWindowWidget::~libraryWindowWidget()
 //just for offline tests
 void libraryWindowWidget::readJson(QString json)
 {
-
 
     //read json from resource file or from argument of function
     QString val;
@@ -241,33 +191,23 @@ void libraryWindowWidget::on_pushButton_clicked()
 
 void libraryWindowWidget::on_pushButton_wyszukaj_clicked()
 {
-    /*
-    QJsonObject  book
-    {
-        {"author",
-            QJsonArray{"id","id",
-             "name","Alan",
-             "removed","false",
-             "surname","Raczek"
-            }
-        },
-        {"bookcategory","category"},
-        {"description","description"},
-        {"id","id"},
-        {"keyWords","keyWords"},
-        {"name","name"},
-        {"releaseDate","releaseDate"},
-        {"removed","false"}
-    };
-*/
+
     //clear books vector and listWidget
     ui->listWidget_booksList->clear();
     vBooks_.clear();
 
-
-
+    QNetworkRequest request;
+    QString searchContent=ui->lineEdit_wyszukaj->text();
+    if(searchContent.isEmpty())
+    {
     //Get everybook from database, assign data to     std::vector<Book> vBooks_;
-    QNetworkRequest request(QUrl("http://localhost:8080/book"));
+    request.setUrl(QUrl("http://localhost:8080/book"));
+     }
+    else {
+     request.setUrl(QUrl("http://localhost:8080/book/?name="+searchContent));
+
+
+    }
     QNetworkReply *reply = m_nam->get(request);
     connect(reply, &QNetworkReply::finished, this, [this, reply] {
         reply->deleteLater();
@@ -307,4 +247,5 @@ void libraryWindowWidget::on_pushButton_wyszukaj_clicked()
         displayBooks();
     }
     );
+
 }
