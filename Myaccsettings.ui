@@ -134,7 +134,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_3">
+            <widget class="QLabel" name="label_usersLogin">
              <property name="font">
               <font>
                <pointsize>16</pointsize>
@@ -168,7 +168,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="label_5">
+            <widget class="QLabel" name="label_usersMail">
              <property name="font">
               <font>
                <pointsize>16</pointsize>
@@ -271,7 +271,7 @@
               </layout>
              </item>
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="pushButton_changePass">
                <property name="text">
                 <string>Zresetuj hasło</string>
                </property>
@@ -374,7 +374,7 @@ Error msgError msg Error msg</string>
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-154</y>
+                <y>0</y>
                 <width>911</width>
                 <height>813</height>
                </rect>

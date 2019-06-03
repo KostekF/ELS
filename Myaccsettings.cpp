@@ -6,7 +6,9 @@
 #include <QJsonArray>
 #include<QNetworkReply>
 #include<QMessageBox>
-//TODO: add something else to this class? (buttons, labels, etc)
+#include <QCryptographicHash>
+#include<QByteArray>
+
 
 extern QString g_userID;
 
@@ -32,39 +34,19 @@ MyAccSettings::MyAccSettings(QWidget *parent) :
     ui->tableWidget_books->setColumnWidth(0, this->width()/2);
     ui->tableWidget_books->horizontalHeader()->setStretchLastSection(true);
 
-
-
-
-    /*
-        //Just for tests add some data to my books
-    ui->tableWidget_books->insertRow(ui->tableWidget_books->rowCount());
-    //Add data to created row
-    ui->tableWidget_books->setItem(ui->tableWidget_books->rowCount()-1, 0,new QTableWidgetItem("Stephen King / Misery"));
-    ui->tableWidget_books->item(ui->tableWidget_books->rowCount()-1, 0)->setTextAlignment(Qt::AlignCenter);
-
-    ui->tableWidget_books->setItem   ( ui->tableWidget_books->rowCount()-1, 1, new QTableWidgetItem("06.08.2019"));
-    ui->tableWidget_books->item(ui->tableWidget_books->rowCount()-1, 1)->setTextAlignment(Qt::AlignCenter);
-
-
-    //add second book
-    ui->tableWidget_books->insertRow(ui->tableWidget_books->rowCount());
-
-    //Add data to created row
-    ui->tableWidget_books->setItem(ui->tableWidget_books->rowCount()-1, 0,new QTableWidgetItem("George R. R. Martin / Taniec ze smokami"));
-    ui->tableWidget_books->item(ui->tableWidget_books->rowCount()-1, 0)->setTextAlignment(Qt::AlignCenter);
-
-    ui->tableWidget_books->setItem   ( ui->tableWidget_books->rowCount()-1, 1, new QTableWidgetItem("16.09.2019"));
-    ui->tableWidget_books->item(ui->tableWidget_books->rowCount()-1, 1)->setTextAlignment(Qt::AlignCenter);
-*/
     ui->lineEdit_add_bookDate->setPlaceholderText("Data format ex.: 2017-08-30");
     ui->lineEdit_add_bookKeywords->setPlaceholderText("słowo1, słowo2, ...");
     ui->lineEdit_edit_bookDate->setPlaceholderText("Data format ex.: 2017-08-30");
-     ui->lineEdit_edit_bookKeywords->setPlaceholderText("słowo1, słowo2, ...");
+    ui->lineEdit_edit_bookKeywords->setPlaceholderText("słowo1, słowo2, ...");
 
 
 
 
-showUsersBooks();
+    showUsersBooks();
+    displayLoginAndEmail();
+    checkIfLibrarian();
+
+
 
 }
 
@@ -76,11 +58,20 @@ MyAccSettings::~MyAccSettings()
 
 
 
-void MyAccSettings::on_pushButton_clicked()
+void MyAccSettings::on_pushButton_changePass_clicked()
 {
     bool goodPasses = true;
     QString newPass = ui->lineEdit_newPass1->text();
     QString newPass2 = ui->lineEdit_newPass2->text();
+    QString oldPass = ui->lineEdit_oldPass->text();
+
+    if(newPass.isEmpty() || newPass.isEmpty() || oldPass.isEmpty() )
+    {
+        goodPasses=false;
+        ui->label_passErrorMsg->setVisible(true);
+        ui->label_passErrorMsg->setStyleSheet("QLabel {color : red; }");
+        ui->label_passErrorMsg->setText("ERROR: Nie wypełniono wszystkich pól!");
+    }
 
     //Compare if two passes match
     if(newPass != newPass2)
@@ -88,12 +79,12 @@ void MyAccSettings::on_pushButton_clicked()
         qDebug()<<"New and repeated pass are not the same";
         ui->label_passErrorMsg->setVisible(true);
         ui->label_passErrorMsg->setStyleSheet("QLabel {color : red; }");
-        ui->label_passErrorMsg->setText("ERROR: New and repeated password are not the same");
+        ui->label_passErrorMsg->setText("ERROR: Nowe i powtórzone hasło nie są jednakowe!");
         goodPasses = false;
-
     }
 
     //Check if new pass has correct length
+    /*
     if(newPass.length()<8 && goodPasses)
     {
         qDebug()<<"New pass too short, it should be minimum 8 characters long"; //TODO: should it be min 8 characters?
@@ -101,9 +92,53 @@ void MyAccSettings::on_pushButton_clicked()
         ui->label_passErrorMsg->setStyleSheet("QLabel {color : red; }");
         ui->label_passErrorMsg->setText("ERROR: New pass too short, it should be minimum 8 characters long");
         goodPasses = false;
+    }*/
+
+
+    if(goodPasses)
+    {
+
+
+        QNetworkRequest request1(QUrl("http://localhost:8080/user/"+g_userID));
+        QNetworkReply *reply1 = networkManager->get(request1);
+        connect(reply1, &QNetworkReply::finished, this, [this, reply1] {
+            reply1->deleteLater();
+            const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply1->readAll());
+            const QJsonObject user = jsonDoc.object();
+            qDebug()<<"connection succesful, parsing JSON";
+
+
+            QString oldPass = ui->lineEdit_oldPass->text();
+            QByteArray bOld= oldPass.toLocal8Bit();
+            QString hashOld= QCryptographicHash::hash(bOld,QCryptographicHash::Sha256);
+
+            QString myPass = ui->lineEdit_newPass1->text();
+            QByteArray b= myPass.toLocal8Bit();
+            QString hashNew= QCryptographicHash::hash(b,QCryptographicHash::Sha256);
+
+            QString dbHash=user["password"].toString();
+            // qDebug()<<"Hash:    "<<hashNew;
+            //  qDebug()<<"db hash: "<<dbHash;
+
+            if(hashOld==dbHash)
+            {
+                qDebug()<<"I'm calling funciton resetPass()";
+
+                QJsonObject obj{
+                    {"password",hashNew}
+                };
+                resetPass(obj);
+            }
+            else
+            {
+                QMessageBox::warning(this, "Błąd zmiany hasła", "<font size = 10 color = red >Nie udało się zmienić hasła, sprawdź wszystkie dane!</font>", QMessageBox::Ok);
+            }
+
+        });
+
     }
 
-    //TODO: check if old pass is correct (compare hashes of old pass and database pass)
+
     /*
     if(old pass_hash != dbHash)
     {
@@ -115,15 +150,16 @@ void MyAccSettings::on_pushButton_clicked()
     //TODO: add additional new pass restrictions?
 
     //If everything is okay connect with server
+    /*
     if(goodPasses)
     {
         qDebug()<<"passwords are the same, changing password to new password, beep, boop";
         ui->label_passErrorMsg->setVisible(true);
         ui->label_passErrorMsg->setStyleSheet("QLabel {color : green; }");
-        ui->label_passErrorMsg->setText("Passwords correct, check your e-mail?");
+        ui->label_passErrorMsg->setText("Passwords correct, changed password");
         //TODO: if everything is okay change hash in database to new pass' hash
     }
-
+*/
 
 
 
@@ -170,47 +206,47 @@ void MyAccSettings::on_pushButton_addBook_clicked()
 
     if(ui->lineEdit_add_authorName->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_add_authorName->setPalette(palette);
+        isAllOk=false;
+        ui->lineEdit_add_authorName->setPalette(palette);
     }
     else{
-     ui->lineEdit_add_authorName->setPalette(this->style()->standardPalette());
+        ui->lineEdit_add_authorName->setPalette(this->style()->standardPalette());
     }
 
     if(ui->lineEdit_add_authorSurname->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_add_authorSurname->setPalette(palette);
+        isAllOk=false;
+        ui->lineEdit_add_authorSurname->setPalette(palette);
     }
     else{
-     ui->lineEdit_add_authorSurname->setPalette(this->style()->standardPalette());
+        ui->lineEdit_add_authorSurname->setPalette(this->style()->standardPalette());
     }
 
     if(ui->lineEdit_add_bookDescription->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_add_bookDescription->setPalette(palette);
+        isAllOk=false;
+        ui->lineEdit_add_bookDescription->setPalette(palette);
     }
     else{
-     ui->lineEdit_add_bookDescription->setPalette(this->style()->standardPalette());
+        ui->lineEdit_add_bookDescription->setPalette(this->style()->standardPalette());
     }
 
     if(ui->lineEdit_add_bookKeywords->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_add_bookKeywords->setPalette(palette);
+        isAllOk=false;
+        ui->lineEdit_add_bookKeywords->setPalette(palette);
     }
     else{
-     ui->lineEdit_add_bookKeywords->setPalette(this->style()->standardPalette());
+        ui->lineEdit_add_bookKeywords->setPalette(this->style()->standardPalette());
     }
 
     if(ui->lineEdit_add_bookName->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_add_bookName->setPalette(palette);
+        isAllOk=false;
+        ui->lineEdit_add_bookName->setPalette(palette);
     }
     else{
-     ui->lineEdit_add_bookName->setPalette(this->style()->standardPalette());
+        ui->lineEdit_add_bookName->setPalette(this->style()->standardPalette());
     }
 
 
@@ -218,11 +254,11 @@ void MyAccSettings::on_pushButton_addBook_clicked()
 
     if(ui->lineEdit_add_bookDate->text().isEmpty() || !re.exactMatch(ui->lineEdit_add_bookDate->text()))
     {
-       isAllOk=false;
-       ui->lineEdit_add_bookDate->setPalette(palette);
+        isAllOk=false;
+        ui->lineEdit_add_bookDate->setPalette(palette);
     }
     else{
-     ui->lineEdit_add_bookDate->setPalette(this->style()->standardPalette());
+        ui->lineEdit_add_bookDate->setPalette(this->style()->standardPalette());
     }
 
 
@@ -300,9 +336,9 @@ void MyAccSettings::on_pushButton_editBook_clicked()
     bool authorDataChange=false;
     if(!ui->lineEdit_edit_authorName->text().isEmpty())
     {
-       ui->lineEdit_edit_authorName->setPalette(this->style()->standardPalette());
-       author.insert("name",ui->lineEdit_edit_authorName->text());
-       authorDataChange=true;
+        ui->lineEdit_edit_authorName->setPalette(this->style()->standardPalette());
+        author.insert("name",ui->lineEdit_edit_authorName->text());
+        authorDataChange=true;
     }
 
 
@@ -364,12 +400,12 @@ void MyAccSettings::on_pushButton_editBook_clicked()
 
     if(ui->line_edit_bookID->text().isEmpty() || !re1.exactMatch(ui->line_edit_bookID->text()))
     {
-       isAllOk=false;
-       ui->line_edit_bookID->setPalette(palette);
-       QMessageBox::information(this, "Błąd edytowania książki", "<font size = 10 color = red >Nie podano ID książki!</font>", QMessageBox::Ok);
+        isAllOk=false;
+        ui->line_edit_bookID->setPalette(palette);
+        QMessageBox::information(this, "Błąd edytowania książki", "<font size = 10 color = red >Nie podano ID książki!</font>", QMessageBox::Ok);
     }
     else{
-     ui->line_edit_bookID->setPalette(this->style()->standardPalette());
+        ui->line_edit_bookID->setPalette(this->style()->standardPalette());
     }
 
     qDebug()<<"jsonObject: "<<obj;
@@ -415,8 +451,6 @@ void MyAccSettings::on_pushButton_editBook_clicked()
 void MyAccSettings::on_pushButton_changeLoanDate_clicked()
 {
 
-
-
     //Iterate over every loan to find loan ID of book given by librarian
     //Alternative: server gives method to return loan by bookID instead
     // of loanID
@@ -427,7 +461,7 @@ void MyAccSettings::on_pushButton_changeLoanDate_clicked()
         const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply1->readAll());
         const QJsonArray loanArray = jsonDoc.array();
         qDebug()<<"connection succesful, parsing JSON";
-         QString bookID="";
+        QString bookID="";
         //iterate over every loan in array and assign values to variables
         for(QJsonArray::const_iterator itr=loanArray.constBegin();itr!=loanArray.constEnd();++itr)
         {
@@ -435,7 +469,7 @@ void MyAccSettings::on_pushButton_changeLoanDate_clicked()
             qDebug()<<loan;
 
             //TODO: Uncomment when Bartek adds removed to loan
-           // QString bookIsAvail= loan.value(QString("loanStatus")).toString();
+            // QString bookIsAvail= loan.value(QString("loanStatus")).toString();
 
             //Skip removed loans
             //if(removed==true) {continue;}
@@ -452,10 +486,6 @@ void MyAccSettings::on_pushButton_changeLoanDate_clicked()
 
         }
     });
-
-
-
-
 
 }
 
@@ -548,8 +578,8 @@ void MyAccSettings::showUsersBooks()
             );
 
             QTime dieTime= QTime::currentTime().addMSecs(25);
-               while (QTime::currentTime() < dieTime)
-                   QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+            while (QTime::currentTime() < dieTime)
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
         }
 
 
@@ -575,13 +605,13 @@ void MyAccSettings::showUsersBooks()
                 for(int i=0; i<jsonArr.size();++i)
                 {
                     loan = jsonArr[i].toObject();
-                   QString status= loan["loanStatus"].toString();
-                   if(status=="AVAILABLE")
-                   {
-                       finishDate_=loan["finishDate"].toString().mid(0,10);
+                    QString status= loan["loanStatus"].toString();
+                    if(status=="AVAILABLE")
+                    {
+                        finishDate_=loan["finishDate"].toString().mid(0,10);
 
-                       break;
-                   }
+                        break;
+                    }
                 }
 
 
@@ -592,8 +622,8 @@ void MyAccSettings::showUsersBooks()
             );
 
             QTime dieTime= QTime::currentTime().addMSecs(100);
-               while (QTime::currentTime() < dieTime)
-                   QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+            while (QTime::currentTime() < dieTime)
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
             ui->tableWidget_books->setItem(ui->tableWidget_books->rowCount()-1, 0,new QTableWidgetItem(vBooks_[i].author().last_name + " "+ vBooks_[i].author().name +" / "+  vBooks_[i].title()));
             ui->tableWidget_books->item(i, 0)->setTextAlignment(Qt::AlignCenter);
 
@@ -690,25 +720,25 @@ void MyAccSettings::delRemoveLoan()
 {
 
 
-            QNetworkRequest request(QUrl("http://localhost:8080/loan/"+loanID_));
+    QNetworkRequest request(QUrl("http://localhost:8080/loan/"+loanID_));
 
-            request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-            QNetworkReply *reply = networkManager-> deleteResource(request);
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = networkManager-> deleteResource(request);
 
 
 
-            connect(reply, &QNetworkReply::finished, this, [this, reply] {
-                reply->deleteLater();
-                QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
-                int status = statusCode.toInt();
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+        int status = statusCode.toInt();
 
-                if ( status == 201 )
-                {
-                    QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
-                    qDebug() << reason;
-                }
+        if ( status == 201 )
+        {
+            QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+            qDebug() << reason;
+        }
 
-            });
+    });
 }
 
 void MyAccSettings::postRemoveBookFromUserList()
@@ -749,6 +779,73 @@ void MyAccSettings::postRemoveBookFromUserList()
     });
 }
 
+void MyAccSettings::displayLoginAndEmail()
+{
+    QNetworkRequest request(QUrl("http://localhost:8080/user/"+g_userID));
+    QNetworkReply *reply = networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        const QJsonObject jsonObj = jsonDoc.object();
+        ui->label_usersLogin->setText(jsonDoc["login"].toString());
+        ui->label_usersMail->setText(jsonDoc["email"].toString());
+    });
+}
+
+void MyAccSettings::resetPass(QJsonObject & obj)
+{
+
+
+    QNetworkRequest request(QUrl("http://localhost:8080/user/update/"+g_userID));
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+    QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
+
+
+
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        QVariant statusCode = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+        int status = statusCode.toInt();
+        qDebug()<<"W connect zmianie hasla";
+        if ( status == 201 )
+        {
+            qDebug()<<"status == 201";
+            QString reason = reply->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+            qDebug() << reason;
+
+            QMessageBox::information(this, "Poprawna zmiana hasła", "<font size = 10 color = green >Zmieniono hasło!</font>", QMessageBox::Ok);
+        }
+        else {
+            QMessageBox::information(this, "Błąd zmiany hasła", "<font size = 10 color = red >Nie udało się zmienić hasła, sprawdź wszystkie dane/połączenie!</font>", QMessageBox::Ok);
+        }
+
+    });
+}
+
+void MyAccSettings::checkIfLibrarian()
+{
+    QNetworkRequest request(QUrl("http://localhost:8080/user/"+g_userID));
+    QNetworkReply *reply = networkManager->get(request);
+    connect(reply, &QNetworkReply::finished, this, [this, reply] {
+        reply->deleteLater();
+        qDebug()<<"updateUserBooklist() - connection succesful, parsing JSON";
+        const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
+        const QJsonObject user = jsonDoc.object();
+        QString userType=user["userType"].toString();
+        if(userType=="WORKER")
+        {
+            qDebug()<<"LIBRARIAN ON BOARD!";
+
+        }
+        else {
+            ui->tabWidget_options->removeTab(2);
+        }
+
+    }
+
+    );
+}
+
 
 
 
@@ -770,12 +867,12 @@ void MyAccSettings::on_pushButton_returnBook_clicked()
         for(int i=0; i<jsonArr.size();++i)
         {
             loan = jsonArr[i].toObject();
-           QString status= loan["loanStatus"].toString();
-           if(status=="AVAILABLE")
-           {
-               loanID_=loan["id"].toString();
-               break;
-           }
+            QString status= loan["loanStatus"].toString();
+            if(status=="AVAILABLE")
+            {
+                loanID_=loan["id"].toString();
+                break;
+            }
         }
 
 

@@ -21,7 +21,7 @@ public:
 private slots:
 
 
-    void on_pushButton_clicked();
+    void on_pushButton_changePass_clicked();
 
     void on_pushButton_delBook_clicked();
 
@@ -50,6 +50,7 @@ private:
     std::vector<Book> vBooks_={};
     QString finishDate_;
     std::vector<QString> vfinishDates_={};
+
     void changeLoanFinishDate();
     void showUsersBooks();
     void updateBookAvailability();
@@ -57,6 +58,9 @@ private:
     void postDateAndStatus();
     void delRemoveLoan();
     void postRemoveBookFromUserList();
+    void displayLoginAndEmail();
+    void resetPass(QJsonObject& obj);
+    void checkIfLibrarian();
 };
 
 #endif // MYACCSETTINGS_H
