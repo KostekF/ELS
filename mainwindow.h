@@ -18,6 +18,7 @@ public:
 
 public slots:
     void showLibWindow();
+    void returnToIntroWindow();
 
 private slots:
     void on_actionPanel_operatorski_triggered();

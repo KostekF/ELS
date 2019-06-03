@@ -15,7 +15,7 @@
 #include <QNetworkRequest>
 #include<QNetworkReply>
 //http://localhost:8080/book
-
+#include"intro.h"
 
 
 
@@ -248,4 +248,11 @@ void libraryWindowWidget::on_pushButton_wyszukaj_clicked()
     }
     );
 
+}
+
+void libraryWindowWidget::on_pushButton_wyloguj_clicked()
+{
+
+      connect(this,SIGNAL(logoutSignal()),parent(),SLOT(returnToIntroWindow()));
+      emit logoutSignal();
 }

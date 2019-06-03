@@ -12,6 +12,7 @@
 #include<QNetworkAccessManager>
 #include"booklistwidget.h"
 #include<vector>
+#include"intro.h"
 namespace Ui {
 class libraryWindowWidget;
 }
@@ -33,9 +34,11 @@ private:
     MyAccSettings * myAccDialog = nullptr;
     QNetworkAccessManager * m_nam;
     std::vector<bookListWidget*> vBookListWidgets; //To stop memory leaks
+   // intro * introWindow;
     void readJson(QString json="");
     void displayBooks();  //Display books in QListWidget
-
+signals:
+    void logoutSignal();
 
 
 public slots:
@@ -44,6 +47,7 @@ public slots:
 private slots:
     void on_pushButton_clicked();
     void on_pushButton_wyszukaj_clicked();
+    void on_pushButton_wyloguj_clicked();
 };
 
 #endif // LIBRARYWINDOWWIDGET_H

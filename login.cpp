@@ -11,6 +11,9 @@
 #include<QNetworkReply>
 #include<QNetworkRequest>
 #include<QMessageBox>
+
+extern QString g_userID;
+
 login::login(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::login)
@@ -102,6 +105,7 @@ void login::checkLoginCredentials()
         if(usersArray.isEmpty())
         {
             qDebug()<<"No users with given login";
+            QMessageBox::warning(this, "Błąd logowania", "<font size = 10 color = red >Nie udało się zalogować, sprawdź wszystkie dane!</font>", QMessageBox::Ok);
         }
         else
         {
@@ -116,6 +120,9 @@ void login::checkLoginCredentials()
 
             if(hash==dbHash)
             {
+                g_userID=user["id"].toString();
+                qDebug()<<"id z obliczen: "<<user["id"].toString();
+                qDebug()<<"id z globalnej: "<<g_userID;
                 emit loginSuccessful();
                 this->close();
             }

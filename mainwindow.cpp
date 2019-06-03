@@ -73,6 +73,12 @@ void MainWindow::showLibWindow()
     this->setCentralWidget(libWindow);
 }
 
+void MainWindow::returnToIntroWindow()
+{
+     introWindow = new intro(this);
+     this->setCentralWidget(introWindow);
+}
+
 
 void MainWindow::on_actionPanel_operatorski_triggered()
 {
