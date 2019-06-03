@@ -240,7 +240,8 @@ void MyAccSettings::on_pushButton_addBook_clicked()
             {"description",ui->lineEdit_add_bookDescription->text()},
             {"keyWords",ui->lineEdit_add_bookKeywords->text()},
             {"name",ui->lineEdit_add_bookName->text()},
-            {"releaseDate",ui->lineEdit_add_bookDate->text()}
+            {"releaseDate",ui->lineEdit_add_bookDate->text()},
+            {"bookavailability","AVAILABLE"}
 
         };
         QNetworkRequest request(QUrl("http://localhost:8080/book/create"));

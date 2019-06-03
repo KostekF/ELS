@@ -4,6 +4,7 @@
 #include <QDialog>
 #include"Register.h"
 #include"Resetpassword.h"
+#include<QNetworkAccessManager>
 namespace Ui {
 class login;
 }
@@ -31,6 +32,8 @@ private:
     Ui::login *ui;
     Register * regDialog;
     ResetPassword * resetDialog;
+    QNetworkAccessManager * networkManager;
+    void checkLoginCredentials();
 };
 
 #endif // LOGIN_H

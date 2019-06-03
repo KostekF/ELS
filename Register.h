@@ -2,7 +2,7 @@
 #define REGISTER_H
 
 #include <QDialog>
-
+#include<QNetworkAccessManager>
 namespace Ui {
 class Register;
 }
@@ -20,6 +20,8 @@ private slots:
 
 private:
     Ui::Register *ui;
+    QNetworkAccessManager * networkManager;
+    void postRegisterUser();
 };
 
 #endif // REGISTER_H
