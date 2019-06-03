@@ -374,7 +374,7 @@ Error msgError msg Error msg</string>
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-154</y>
                 <width>911</width>
                 <height>813</height>
                </rect>

@@ -280,112 +280,104 @@ void MyAccSettings::on_pushButton_addBook_clicked()
 
 void MyAccSettings::on_pushButton_editBook_clicked()
 {
-     //TODO: Edit book code when api is finished
-    /*
+    QJsonObject author
+    {
+    };
+
     QJsonObject  obj
     {
-        {"author","Alan Raczek"},
-        {"name","Historia muzykow"}
+        {"bookcategory", "FANTASY"} //TODO dodaj listę kategorii?
+
     };
-    QNetworkRequest request(QUrl("http://localhost:8080/book/update/" + TODOTODO ID ));
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
-*/
-    //color when user inputs wrong input
 
     QPalette palette;
     palette.setColor(QPalette::Base,Qt::red);
     palette.setColor(QPalette::Text,Qt::white);
 
-
     bool isAllOk=true;
 
-    if(ui->lineEdit_edit_authorName->text().isEmpty())
+
+    bool authorDataChange=false;
+    if(!ui->lineEdit_edit_authorName->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_edit_authorName->setPalette(palette);
-    }
-    else{
-     ui->lineEdit_edit_authorName->setPalette(this->style()->standardPalette());
+       ui->lineEdit_edit_authorName->setPalette(this->style()->standardPalette());
+       author.insert("name",ui->lineEdit_edit_authorName->text());
+       authorDataChange=true;
     }
 
-    if(ui->lineEdit_edit_authorSurname->text().isEmpty())
+
+    if(!ui->lineEdit_edit_authorSurname->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_edit_authorSurname->setPalette(palette);
+        ui->lineEdit_edit_authorSurname->setPalette(this->style()->standardPalette());
+        author.insert("surname",ui->lineEdit_edit_authorSurname->text());
+        authorDataChange=true;
     }
-    else{
-     ui->lineEdit_edit_authorSurname->setPalette(this->style()->standardPalette());
+    if(authorDataChange)
+    {
+        obj.insert("author",author);
     }
 
-    if(ui->lineEdit_edit_bookDescription->text().isEmpty())
+
+    if(!ui->lineEdit_edit_bookDescription->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_edit_bookDescription->setPalette(palette);
-    }
-    else{
-     ui->lineEdit_edit_bookDescription->setPalette(this->style()->standardPalette());
+        ui->lineEdit_edit_bookDescription->setPalette(this->style()->standardPalette());
+        obj.insert("description",ui->lineEdit_edit_bookDescription->text());
     }
 
-    if(ui->lineEdit_edit_bookKeywords->text().isEmpty())
+
+    if(!ui->lineEdit_edit_bookKeywords->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_edit_bookKeywords->setPalette(palette);
-    }
-    else{
-     ui->lineEdit_edit_bookKeywords->setPalette(this->style()->standardPalette());
+        ui->lineEdit_edit_bookKeywords->setPalette(this->style()->standardPalette());
+        obj.insert("keyWords",ui->lineEdit_edit_bookKeywords->text());
     }
 
-    if(ui->lineEdit_edit_bookName->text().isEmpty())
+
+    if(!ui->lineEdit_edit_bookName->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_edit_bookName->setPalette(palette);
-    }
-    else{
-     ui->lineEdit_edit_bookName->setPalette(this->style()->standardPalette());
+        ui->lineEdit_edit_bookName->setPalette(this->style()->standardPalette());
+        obj.insert("name",ui->lineEdit_edit_bookName->text());
     }
 
 
     QRegExp re("^(\\d\\d\\d\\d)-(\\d\\d)-(\\d\\d)$");  // a digit (\d), zero or more times (*)
 
-    if(ui->lineEdit_edit_bookDate->text().isEmpty() || !re.exactMatch(ui->lineEdit_edit_bookDate->text()))
+    if(!ui->lineEdit_edit_bookDate->text().isEmpty())
     {
-       isAllOk=false;
-       ui->lineEdit_edit_bookDate->setPalette(palette);
+        if(!re.exactMatch(ui->lineEdit_edit_bookDate->text()))
+        {
+            isAllOk=false;
+            ui->lineEdit_edit_bookDate->setPalette(palette);
+        }
+        else
+        {
+            obj.insert("releaseDate",ui->lineEdit_edit_bookDate->text());
+        }
+
     }
-    else{
-     ui->lineEdit_edit_bookDate->setPalette(this->style()->standardPalette());
+    else
+    {
+        ui->lineEdit_edit_bookDate->setPalette(this->style()->standardPalette());
     }
-   QRegExp re1("^[a-zA-Z0-9_]{24}$");  // a digit (\d), zero or more times (*)
+
+
+    QRegExp re1("^[a-zA-Z0-9_]{24}$");  // a digit (\d), zero or more times (*)
 
     if(ui->line_edit_bookID->text().isEmpty() || !re1.exactMatch(ui->line_edit_bookID->text()))
     {
        isAllOk=false;
        ui->line_edit_bookID->setPalette(palette);
+       QMessageBox::information(this, "Błąd edytowania książki", "<font size = 10 color = red >Nie podano ID książki!</font>", QMessageBox::Ok);
     }
     else{
      ui->line_edit_bookID->setPalette(this->style()->standardPalette());
     }
 
-
+    qDebug()<<"jsonObject: "<<obj;
 
     if(isAllOk)
     {
         qDebug()<<"Edit: all is ok";
-        QJsonObject  obj
-        {
-            {"author",QJsonObject{
-                    {"name",ui->lineEdit_edit_authorName->text()},
-                    {"surname",ui->lineEdit_edit_authorSurname->text()}
-                }
-            },
-            {"bookcategory", "FANTASY"}, //TODO dodaj listę kategorii?
-            {"description",ui->lineEdit_edit_bookDescription->text()},
-            {"keyWords",ui->lineEdit_edit_bookKeywords->text()},
-            {"name",ui->lineEdit_edit_bookName->text()},
-            {"releaseDate",ui->lineEdit_edit_bookDate->text()}
 
-        };
         QNetworkRequest request(QUrl("http://localhost:8080/book/update/"+ui->line_edit_bookID->text()));
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         QNetworkReply *reply = networkManager->post(request,QJsonDocument(obj).toJson());
