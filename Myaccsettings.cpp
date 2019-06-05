@@ -787,8 +787,8 @@ void MyAccSettings::displayLoginAndEmail()
         reply->deleteLater();
         const QJsonDocument jsonDoc = QJsonDocument::fromJson(reply->readAll());
         const QJsonObject jsonObj = jsonDoc.object();
-        ui->label_usersLogin->setText(jsonDoc["login"].toString());
-        ui->label_usersMail->setText(jsonDoc["email"].toString());
+        ui->label_usersLogin->setText(jsonObj["login"].toString());
+        ui->label_usersMail->setText(jsonObj["email"].toString());
     });
 }
 
